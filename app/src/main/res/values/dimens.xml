@@ -1,4 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <dimen name="margin_4dp">4dp</dimen>
+    <dimen name="margin_padding_4dp">4dp</dimen>
+    <dimen name="margin_padding_8dp">8dp</dimen>
+    <dimen name="margin_padding_16dp">16dp</dimen>
+    <dimen name="margin_padding_32dp">32dp</dimen>
+    <dimen name="margin_padding_40dp">40dp</dimen>
+    <dimen name="margin_padding_160dp">160dp</dimen>
+    <dimen name="margin_padding_168dp">168dp</dimen>
+    <dimen name="margin_padding_212dp">212dp</dimen>
+
+    <dimen name="text_size_small">12sp</dimen>
+    <dimen name="text_size_normal">16sp</dimen>
+    <dimen name="text_size_medium">20sp</dimen>
+    <dimen name="text_size_title">48sp</dimen>
+
+    <dimen name="activity_main_ll_width">160dp</dimen>
+    <dimen name="activity_main_size_of_main_image">184dp</dimen>
 </resources>

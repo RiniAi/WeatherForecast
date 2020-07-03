@@ -13,7 +13,7 @@
         android:id="@+id/navigation"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="@dimen/margin_4dp"
+        android:layout_marginBottom="@dimen/margin_padding_4dp"
         app:tabSelectedTextColor="@color/color_primary_dark"
         app:tabMode="fixed">
     </com.google.android.material.tabs.TabLayout>
