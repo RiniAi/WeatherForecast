@@ -6,9 +6,10 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewpager.widget.ViewPager;
 
 import com.example.weatherforecast.databinding.ActivityMainBinding;
-import com.example.weatherforecast.features.precipitation.PrecipitationFragment;
-import com.example.weatherforecast.features.weatherForToday.TodayFragment;
-import com.example.weatherforecast.features.weatherForWeek.WeekFragment;
+import com.example.weatherforecast.features.dailyForecast.DailyForecastFragment;
+import com.example.weatherforecast.features.hourlyForecast.HourlyForecastFragment;
+import com.example.weatherforecast.features.precipitationForecast.PrecipitationForecastFragment;
+import com.example.weatherforecast.features.todayForecast.TodayForecastFragment;
 import com.google.android.material.tabs.TabLayout;
 
 public class MainActivity extends AppCompatActivity {
@@ -33,9 +34,10 @@ public class MainActivity extends AppCompatActivity {
 
     private void loadFragment() {
         MainFragmentPageAdapter adapter = new MainFragmentPageAdapter(getSupportFragmentManager());
-        adapter.addFragment(new TodayFragment(), "Today");
-        adapter.addFragment(new WeekFragment(), "Forecast");
-        adapter.addFragment(new PrecipitationFragment(), "Precipitation");
+        adapter.addFragment(new TodayForecastFragment(), "Today");
+        adapter.addFragment(new DailyForecastFragment(), "Daily");
+        adapter.addFragment(new HourlyForecastFragment(), "Hourly");
+        adapter.addFragment(new PrecipitationForecastFragment(), "Precipitation");
         pager.setAdapter(adapter);
         navigation.setupWithViewPager(pager);
     }

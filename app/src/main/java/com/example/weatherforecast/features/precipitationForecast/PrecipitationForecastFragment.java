@@ -1,4 +1,4 @@
-package com.example.weatherforecast.features.precipitation;
+package com.example.weatherforecast.features.precipitationForecast;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -9,16 +9,16 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
-import com.example.weatherforecast.databinding.FragmentPrecipitationBinding;
+import com.example.weatherforecast.databinding.FragmentPrecipitationForecastBinding;
 
-public class PrecipitationFragment extends Fragment {
+public class PrecipitationForecastFragment extends Fragment {
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        FragmentPrecipitationBinding binding = FragmentPrecipitationBinding.inflate(inflater, container, false);
+        FragmentPrecipitationForecastBinding binding = FragmentPrecipitationForecastBinding.inflate(inflater, container, false);
         return binding.getRoot();
     }
 }

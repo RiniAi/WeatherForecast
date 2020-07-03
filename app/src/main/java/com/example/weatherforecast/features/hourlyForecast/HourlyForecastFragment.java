@@ -1,4 +1,4 @@
-package com.example.weatherforecast.features.weatherForWeek;
+package com.example.weatherforecast.features.hourlyForecast;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -9,16 +9,16 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
-import com.example.weatherforecast.databinding.FragmentWeekBinding;
+import com.example.weatherforecast.databinding.FragmentHourlyForecastBinding;
 
-public class WeekFragment extends Fragment {
+public class HourlyForecastFragment extends Fragment {
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        FragmentWeekBinding binding = FragmentWeekBinding.inflate(inflater, container, false);
+        FragmentHourlyForecastBinding binding = FragmentHourlyForecastBinding.inflate(inflater, container, false);
         return binding.getRoot();
     }
 }
