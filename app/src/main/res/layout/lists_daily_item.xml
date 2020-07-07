@@ -95,7 +95,7 @@
                         android:src="@drawable/not_drop" />
 
                     <TextView
-                        android:id="@+id/tv_image_clouds"
+                        android:id="@+id/tv_clouds"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:gravity="center"
