@@ -3,17 +3,34 @@
     <dimen name="margin_padding_4dp">4dp</dimen>
     <dimen name="margin_padding_8dp">8dp</dimen>
     <dimen name="margin_padding_16dp">16dp</dimen>
+    <dimen name="margin_padding_24dp">24dp</dimen>
     <dimen name="margin_padding_32dp">32dp</dimen>
-    <dimen name="margin_padding_40dp">40dp</dimen>
-    <dimen name="margin_padding_160dp">160dp</dimen>
-    <dimen name="margin_padding_168dp">168dp</dimen>
-    <dimen name="margin_padding_212dp">212dp</dimen>
+    <dimen name="margin_padding_56dp">56dp</dimen>
+    <dimen name="margin_padding_64dp">64dp</dimen>
+    <dimen name="margin_padding_176dp">176dp</dimen>
+    <dimen name="margin_padding_228dp">228dp</dimen>
+    <dimen name="margin_padding_232dp">232dp</dimen>
 
     <dimen name="text_size_small">12sp</dimen>
     <dimen name="text_size_normal">16sp</dimen>
     <dimen name="text_size_medium">20sp</dimen>
     <dimen name="text_size_title">48sp</dimen>
 
-    <dimen name="activity_main_ll_width">160dp</dimen>
-    <dimen name="activity_main_size_of_main_image">184dp</dimen>
+    <dimen name="fragment_day_cv_width">104dp</dimen>
+    <dimen name="fragment_day_ll_width">160dp</dimen>
+    <dimen name="fragment_day_size_of_main_image">152dp</dimen>
+
+    <dimen name="list_time_of_day_ll_width">160dp</dimen>
+    <dimen name="list_time_of_day_v_height">2dp</dimen>
+    <dimen name="list_time_of_day_size_image">120dp</dimen>
+
+    <dimen name="fragment_today_cv_width">104dp</dimen>
+    <dimen name="fragment_today_ll_width">160dp</dimen>
+    <dimen name="fragment_today_size_of_main_image">152dp</dimen>
+
+    <dimen name="list_hourly_size_main_image">48dp</dimen>
+    <dimen name="list_hourly_size_crop_image">16dp</dimen>
+
+    <dimen name="list_daily_size_main_image">48dp</dimen>
+    <dimen name="list_daily_size_crop_image">16dp</dimen>
 </resources>

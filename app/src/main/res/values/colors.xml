@@ -1,9 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="color_primary">#6200EE</color>
-    <color name="color_primary_dark">#3700B3</color>
-    <color name="color_accent">#03DAC5</color>
-
-    <color name="fon">#FBFBFB</color>
-    <color name="spinner_item_primary">#7A7A7A</color>
+    <color name="color_primary">#005d7f</color>
+    <color name="color_primary_dark">#2a8aae</color>
+    <color name="color_accent">#2a8aae</color>
 </resources>
