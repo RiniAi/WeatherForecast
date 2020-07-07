@@ -1,4 +1,4 @@
-package com.example.weatherforecast.features.main;
+package com.example.weatherforecast.features;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -9,11 +9,11 @@ import androidx.fragment.app.FragmentPagerAdapter;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainFragmentPageAdapter extends FragmentPagerAdapter {
+public class FragmentPageAdapter extends FragmentPagerAdapter {
     private final List<Fragment> mFragmentList = new ArrayList<>();
     private final List<String> mFragmentTitleList = new ArrayList<>();
 
-    MainFragmentPageAdapter(@NonNull FragmentManager fm) {
+    public FragmentPageAdapter(@NonNull FragmentManager fm) {
         super(fm);
     }
 
@@ -23,7 +23,7 @@ public class MainFragmentPageAdapter extends FragmentPagerAdapter {
         return mFragmentList.get(position);
     }
 
-    void addFragment(Fragment fragment, String title) {
+    public void addFragment(Fragment fragment, String title) {
         mFragmentList.add(fragment);
         mFragmentTitleList.add(title);
     }

@@ -1,28 +1,25 @@
-package com.example.weatherforecast.features.main;
+package com.example.weatherforecast.features.dayForecast;
 
 import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewpager.widget.ViewPager;
 
-import com.example.weatherforecast.databinding.ActivityMainBinding;
+import com.example.weatherforecast.databinding.ActivityDayBinding;
 import com.example.weatherforecast.features.FragmentPageAdapter;
-import com.example.weatherforecast.features.dailyForecast.DailyForecastFragment;
-import com.example.weatherforecast.features.hourlyForecast.HourlyForecastFragment;
-import com.example.weatherforecast.features.todayForecast.TodayForecastFragment;
 import com.google.android.material.tabs.TabLayout;
 
-public class MainActivity extends AppCompatActivity {
-    private ActivityMainBinding binding;
+public class DayForecastActivity extends AppCompatActivity {
+    private ActivityDayBinding binding;
     private TabLayout navigation;
     private ViewPager pager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        binding = ActivityMainBinding.inflate(getLayoutInflater());
+        binding = ActivityDayBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-        setSupportActionBar(binding.toolbarMainActivity.toolbar);
+        setSupportActionBar(binding.toolbarDayActivity.toolbar);
         initNavigation();
         loadFragment();
     }
@@ -34,9 +31,13 @@ public class MainActivity extends AppCompatActivity {
 
     private void loadFragment() {
         FragmentPageAdapter adapter = new FragmentPageAdapter(getSupportFragmentManager());
-        adapter.addFragment(new TodayForecastFragment(), "Today");
-        adapter.addFragment(new HourlyForecastFragment(), "Hourly");
-        adapter.addFragment(new DailyForecastFragment(), "Daily");
+        adapter.addFragment(new DayForecastFragment(), "MONDAY");
+        adapter.addFragment(new DayForecastFragment(), "TUESDAY");
+        adapter.addFragment(new DayForecastFragment(), "WEDNESDAY");
+        adapter.addFragment(new DayForecastFragment(), "THURSDAY");
+        adapter.addFragment(new DayForecastFragment(), "FRIDAY");
+        adapter.addFragment(new DayForecastFragment(), "SATURDAY");
+        adapter.addFragment(new DayForecastFragment(), "SUNDAY");
         pager.setAdapter(adapter);
         navigation.setupWithViewPager(pager);
     }

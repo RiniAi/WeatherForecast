@@ -12,13 +12,14 @@ import androidx.fragment.app.Fragment;
 import com.example.weatherforecast.databinding.FragmentDailyForecastBinding;
 
 public class DailyForecastFragment extends Fragment {
+    private FragmentDailyForecastBinding binding;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        FragmentDailyForecastBinding binding = FragmentDailyForecastBinding.inflate(inflater, container, false);
+        binding = FragmentDailyForecastBinding.inflate(inflater, container, false);
         return binding.getRoot();
     }
 }
