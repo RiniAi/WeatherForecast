@@ -41,7 +41,7 @@
                 android:orientation="horizontal">
 
                 <LinearLayout
-                    android:layout_width="@dimen/activity_main_ll_width"
+                    android:layout_width="@dimen/list_time_of_day_ll_width"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="@dimen/margin_padding_32dp"
                     android:orientation="vertical">
