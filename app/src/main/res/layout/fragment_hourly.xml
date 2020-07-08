@@ -20,8 +20,9 @@
                 android:layout_height="match_parent"
                 android:layout_marginStart="@dimen/margin_padding_4dp"
                 android:layout_marginEnd="@dimen/margin_padding_4dp"
+                android:layout_marginBottom="@dimen/margin_padding_4dp"
                 tools:layoutManager="LinearLayoutManager"
-                tools:listitem="@layout/lists_hourly_item" />
+                tools:listitem="@layout/lists_hourly_item"/>
         </LinearLayout>
     </ScrollView>
 </LinearLayout>
