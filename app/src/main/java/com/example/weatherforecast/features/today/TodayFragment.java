@@ -44,7 +44,9 @@ public class TodayFragment extends Fragment {
         binding.tvWindSpeed.setText(String.valueOf(current.getWindSpeed()));
         binding.tvClouds.setText(String.valueOf(current.getClouds()));
         binding.tvHumidity.setText(String.valueOf(current.getHumidity()));
+        binding.tvPressure.setText(String.valueOf(current.getPressure()));
         binding.tvSunrise.setText(String.valueOf(current.getSunrise()));
+        binding.tvSunset.setText(String.valueOf(current.getSunset()));
         binding.tvUvi.setText(String.valueOf(current.getUvi()));
 
         TodayHourlyAdapter hourlyAdapter = new TodayHourlyAdapter(getActivity());

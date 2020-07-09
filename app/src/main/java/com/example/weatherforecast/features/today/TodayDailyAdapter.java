@@ -36,7 +36,7 @@ public class TodayDailyAdapter extends BaseAdapter<Daily, TodayDailyAdapter.Hour
         }
         holder.date.setText(String.valueOf(daily.getDate()));
         Picasso.get().load(R.drawable.n_few_clouds).into(holder.image);
-        holder.temperature.setText(String.valueOf(daily.getTemp().get(0).getMax()));
+        holder.temperature.setText(String.valueOf(daily.getTemp().getMax()));
     }
 
     class HourlyForecastViewHolder extends BaseViewHolder {
