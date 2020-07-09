@@ -35,13 +35,14 @@ public class DailyAdapter extends BaseAdapter<Daily, DailyAdapter.DailyViewHolde
             return;
         }
         holder.date.setText(String.valueOf(daily.getDate()));
-        holder.temperature.setText(String.valueOf(daily.getTemp().get(0).getMax()));
+        holder.temperature.setText(String.valueOf(daily.getTemp().getMax()));
         holder.description.setText(daily.getWeather().get(0).getDescription());
         holder.wind.setText(String.valueOf(daily.getWindSpeed()));
         Picasso.get().load(R.drawable.n_few_clouds).into(holder.image);
         holder.clouds.setText(String.valueOf(daily.getClouds()));
         holder.humidity.setText(String.valueOf(daily.getHumidity()));
         holder.pressure.setText(String.valueOf(daily.getPressure()));
+        holder.uvi.setText(String.valueOf(daily.getUvi()));
     }
 
     class DailyViewHolder extends BaseViewHolder {
@@ -53,6 +54,7 @@ public class DailyAdapter extends BaseAdapter<Daily, DailyAdapter.DailyViewHolde
         TextView clouds;
         TextView humidity;
         TextView pressure;
+        TextView uvi;
 
         DailyViewHolder(@NonNull View view) {
             super(view);
@@ -64,6 +66,7 @@ public class DailyAdapter extends BaseAdapter<Daily, DailyAdapter.DailyViewHolde
             clouds = view.findViewById(R.id.tv_clouds);
             humidity = view.findViewById(R.id.tv_humidity);
             pressure = view.findViewById(R.id.tv_pressure);
+            uvi = view.findViewById(R.id.tv_uvi);
         }
     }
 }

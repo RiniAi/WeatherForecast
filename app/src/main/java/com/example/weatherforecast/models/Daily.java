@@ -7,13 +7,14 @@ import java.util.List;
 
 public class Daily implements Serializable {
     private int dt;
-    private List<Temp> temp;
+    private Temp temp;
     private int pressure;
     private int humidity;
     @SerializedName("wind_speed")
     private float windSpeed;
     private List<Weather> weather;
     private int clouds;
+    private float uvi;
 
     public int getDate() {
         return dt;
@@ -23,11 +24,11 @@ public class Daily implements Serializable {
         this.dt = dt;
     }
 
-    public List<Temp> getTemp() {
+    public Temp getTemp() {
         return temp;
     }
 
-    public void setTemp(List<Temp> temp) {
+    public void setTemp(Temp temp) {
         this.temp = temp;
     }
 
@@ -69,5 +70,13 @@ public class Daily implements Serializable {
 
     public void setClouds(int clouds) {
         this.clouds = clouds;
+    }
+
+    public float getUvi() {
+        return uvi;
+    }
+
+    public void setUvi(float uvi) {
+        this.uvi = uvi;
     }
 }

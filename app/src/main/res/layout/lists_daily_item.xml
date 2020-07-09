@@ -169,7 +169,7 @@
                         android:text="Uvi" />
 
                     <TextView
-                        android:id="@+id/tv_wind"
+                        android:id="@+id/tv_uvi"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:padding="@dimen/margin_padding_8dp"
