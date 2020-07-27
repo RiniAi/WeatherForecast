@@ -46,9 +46,9 @@ public class MainActivity extends AppCompatActivity {
         call.enqueue(new Callback<Forecast>() {
             @Override
             public void onResponse(Call<Forecast> call, Response<Forecast> response) {
-                Log.i("INFOR", call.toString());
                 Forecast forecast = response.body();
                 showForecast(forecast);
+                Log.i("INFOR", response.toString());
             }
 
             @Override
