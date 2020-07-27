@@ -1,3 +1,12 @@
 <resources>
     <string name="app_name">Weather Forecast</string>
+
+    <string name="temperature">%1$d°</string>
+    <string name="hourly_temperature">about %1$d°</string>
+    <string name="temperature_feels_like">fells like %1$d°</string>
+    <string name="wind_speed">wind about %1$d KM/H</string>
+    <string name="hourly_wind_speed">%1$d KM/H</string>
+    <string name="clouds">%1$d%%</string>
+    <string name="humidity">%1$d%%</string>
+    <string name="pressure">%1$d hpa</string>
 </resources>
