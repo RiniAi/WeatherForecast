@@ -1,6 +1,7 @@
 package com.example.weatherforecast.models;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 public class Forecast implements Serializable {
@@ -38,12 +39,28 @@ public class Forecast implements Serializable {
         return hourly;
     }
 
+    public List<Hourly> getTodayHourly() {
+        List<Hourly> todayHourly = new ArrayList<>();
+        for (int i = 0; i < 5; i++) {
+            todayHourly.add(hourly.get(i));
+        }
+        return todayHourly;
+    }
+
     public void setHourly(List<Hourly> hourly) {
         this.hourly = hourly;
     }
 
     public List<Daily> getDaily() {
         return daily;
+    }
+
+    public List<Daily> getTodayDaily() {
+        List<Daily> dailyHourly = new ArrayList<>();
+        for (int i = 0; i < 5; i++) {
+            dailyHourly.add(daily.get(i));
+        }
+        return dailyHourly;
     }
 
     public void setDaily(List<Daily> daily) {
