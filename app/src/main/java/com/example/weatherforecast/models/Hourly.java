@@ -8,7 +8,7 @@ import java.util.List;
 public class Hourly implements Serializable {
     private int dt;
     private float temp;
-    private int clouds;
+    private int humidity;
     @SerializedName("wind_speed")
     private float windSpeed;
     private List<Weather> weather;
@@ -30,11 +30,11 @@ public class Hourly implements Serializable {
     }
 
     public int getClouds() {
-        return clouds;
+        return humidity;
     }
 
-    public void setClouds(int clouds) {
-        this.clouds = clouds;
+    public void setClouds(int humidity) {
+        this.humidity = humidity;
     }
 
     public float getWindSpeed() {

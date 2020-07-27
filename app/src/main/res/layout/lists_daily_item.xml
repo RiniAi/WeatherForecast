@@ -97,10 +97,10 @@
                         android:layout_height="wrap_content"
                         android:padding="@dimen/margin_padding_8dp"
                         android:layout_gravity="center"
-                        android:text="Clouds"/>
+                        android:text="Humidity" />
 
                     <TextView
-                        android:id="@+id/tv_clouds"
+                        android:id="@+id/tv_humidity"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:padding="@dimen/margin_padding_8dp"
@@ -120,10 +120,10 @@
                         android:layout_height="wrap_content"
                         android:padding="@dimen/margin_padding_8dp"
                         android:layout_gravity="center"
-                        android:text="Humidity" />
+                        android:text="Clouds"/>
 
                     <TextView
-                        android:id="@+id/tv_humidity"
+                        android:id="@+id/tv_clouds"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:padding="@dimen/margin_padding_8dp"

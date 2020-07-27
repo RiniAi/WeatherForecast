@@ -61,8 +61,8 @@ public class MainActivity extends AppCompatActivity {
     private void showForecast(Forecast forecast) {
         FragmentPageAdapter adapter = new FragmentPageAdapter(getSupportFragmentManager());
         adapter.addFragment(TodayFragment.newInstance(forecast), "Today");
-        adapter.addFragment(HourlyFragment.newInstance(forecast.getHourly()), "Hourly");
         adapter.addFragment(DailyFragment.newInstance(forecast.getDaily()), "Daily");
+        adapter.addFragment(HourlyFragment.newInstance(forecast.getHourly()), "Hourly");
         pager.setAdapter(adapter);
         navigation.setupWithViewPager(pager);
     }
