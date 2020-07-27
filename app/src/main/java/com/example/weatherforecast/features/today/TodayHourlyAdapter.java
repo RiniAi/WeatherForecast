@@ -124,10 +124,8 @@ public class TodayHourlyAdapter extends BaseAdapter<Hourly, TodayHourlyAdapter.H
                 }
                 break;
             case 803:
-                Picasso.get().load(R.drawable.broken_clouds).into(holder.image);
-                break;
             case 804:
-                Picasso.get().load(R.drawable.overcast_clouds).into(holder.image);
+                Picasso.get().load(R.drawable.broken_clouds).into(holder.image);
                 break;
             case 802:
             default:

@@ -149,10 +149,8 @@ public class TodayFragment extends Fragment {
                 }
                 break;
             case 803:
-                binding.ivImageWeather.setImageResource(R.drawable.broken_clouds);
-                break;
             case 804:
-                binding.ivImageWeather.setImageResource(R.drawable.overcast_clouds);
+                binding.ivImageWeather.setImageResource(R.drawable.broken_clouds);
                 break;
             case 802:
             default:
