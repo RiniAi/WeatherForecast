@@ -23,7 +23,7 @@
     <dimen name="list_hourly_size_main_image">48dp</dimen>
     <dimen name="list_hourly_size_crop_image">16dp</dimen>
 
-    <dimen name="list_today_hourly_size_main_image">48dp</dimen>
+    <dimen name="list_today_hourly_size_main_image">56dp</dimen>
 
-    <dimen name="list_today_daily_size_main_image">48dp</dimen>
+    <dimen name="list_today_daily_size_main_image">56dp</dimen>
 </resources>

@@ -41,12 +41,11 @@
                 android:id="@+id/iv_image_weather"
                 android:layout_width="@dimen/list_hourly_size_main_image"
                 android:layout_height="@dimen/list_hourly_size_main_image"
-                android:layout_marginEnd="@dimen/margin_padding_56dp"
                 android:layout_gravity="center"
                 android:src="@drawable/d_clear_sky" />
 
             <LinearLayout
-                android:layout_width="wrap_content"
+                android:layout_width="128dp"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="@dimen/margin_padding_16dp"
                 android:orientation="vertical">
@@ -55,7 +54,6 @@
                     android:id="@+id/tv_description_weather"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:gravity="center"
                     android:padding="@dimen/margin_padding_8dp"
                     android:text="sunny" />
 
@@ -88,6 +86,7 @@
                     android:gravity="center">
 
                     <ImageView
+                        android:id="@+id/iv_clouds"
                         android:layout_width="@dimen/list_hourly_size_crop_image"
                         android:layout_height="@dimen/list_hourly_size_crop_image"
                         android:gravity="center"
