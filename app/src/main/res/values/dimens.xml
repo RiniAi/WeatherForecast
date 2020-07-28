@@ -6,7 +6,6 @@
     <dimen name="margin_padding_16dp">16dp</dimen>
     <dimen name="margin_padding_32dp">32dp</dimen>
     <dimen name="margin_padding_48dp">48dp</dimen>
-    <dimen name="margin_padding_56dp">56dp</dimen>
     <dimen name="margin_padding_208dp">208dp</dimen>
     <dimen name="margin_padding_220dp">220dp</dimen>
 
@@ -19,7 +18,7 @@
     <dimen name="list_daily_item_v_height">2dp</dimen>
     <dimen name="list_daily_item_size_image">96dp</dimen>
 
-    <dimen name="fragment_today_cv_width">104dp</dimen>
+    <dimen name="fragment_today_cv_width">106dp</dimen>
     <dimen name="fragment_today_ll_width">160dp</dimen>
     <dimen name="fragment_today_size_of_main_image">152dp</dimen>
 
