@@ -1,11 +1,16 @@
 package com.example.weatherforecast.features.main;
 
+import android.app.SearchManager;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.widget.SearchView;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewpager.widget.ViewPager;
 
+import com.example.weatherforecast.R;
 import com.example.weatherforecast.databinding.ActivityMainBinding;
 import com.example.weatherforecast.features.FragmentPageAdapter;
 import com.example.weatherforecast.features.daily.DailyFragment;
@@ -24,6 +29,7 @@ public class MainActivity extends AppCompatActivity {
     private ActivityMainBinding binding;
     private TabLayout navigation;
     private ViewPager pager;
+    private SearchView searchView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,7 +38,38 @@ public class MainActivity extends AppCompatActivity {
         setContentView(binding.getRoot());
         setSupportActionBar(binding.toolbarMainActivity.toolbar);
         initNavigation();
-        loadForecast();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.search_menu, menu);
+        SearchManager searchManager = (SearchManager) getSystemService(SEARCH_SERVICE);
+        searchView = (SearchView) menu.findItem(R.id.search).getActionView();
+        searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
+
+        menu.findItem(R.id.search).setOnMenuItemClickListener(menuItem -> {
+            searchView.setFocusable(true);
+            searchView.setIconified(false);
+            return false;
+        });
+
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String s) {
+                searchView.clearFocus();
+                menu.findItem(R.id.search).collapseActionView();
+                binding.toolbarMainActivity.toolbar.setTitle(searchView.getQuery());
+                loadForecast();
+                return true;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String s) {
+                return false;
+            }
+        });
+
+        return true;
     }
 
     private void initNavigation() {
