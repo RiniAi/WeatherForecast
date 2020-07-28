@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
 import android.view.Menu;
-import android.view.MenuItem;
 import android.widget.SearchView;
 import android.widget.Toast;
 
@@ -50,13 +49,10 @@ public class MainActivity extends AppCompatActivity {
         searchView = (SearchView) menu.findItem(R.id.search).getActionView();
         searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
 
-        menu.findItem(R.id.search).setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(MenuItem menuItem) {
-                searchView.setFocusable(true);
-                searchView.setIconified(false);
-                return false;
-            }
+        menu.findItem(R.id.search).setOnMenuItemClickListener(menuItem -> {
+            searchView.setFocusable(true);
+            searchView.setIconified(false);
+            return false;
         });
 
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
@@ -74,7 +70,6 @@ public class MainActivity extends AppCompatActivity {
                 return false;
             }
         });
-
         return true;
     }
 
