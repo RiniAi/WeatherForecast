@@ -14,8 +14,8 @@
             android:id="@+id/rv_daily_forecast"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginStart="@dimen/margin_padding_4dp"
-            android:layout_marginEnd="@dimen/margin_padding_4dp"
+            android:layout_marginStart="@dimen/margin_padding_8dp"
+            android:layout_marginEnd="@dimen/margin_padding_8dp"
             android:layout_marginBottom="@dimen/margin_padding_8dp"
             tools:layoutManager="LinearLayoutManager"
             tools:listitem="@layout/lists_daily_item" />
