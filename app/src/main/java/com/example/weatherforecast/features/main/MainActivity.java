@@ -2,10 +2,12 @@ package com.example.weatherforecast.features.main;
 
 import android.app.SearchManager;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.SearchView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewpager.widget.ViewPager;
@@ -30,6 +32,7 @@ public class MainActivity extends AppCompatActivity {
     private TabLayout navigation;
     private ViewPager pager;
     private SearchView searchView;
+    private boolean doubleBackToExitPressedOnce = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,10 +50,13 @@ public class MainActivity extends AppCompatActivity {
         searchView = (SearchView) menu.findItem(R.id.search).getActionView();
         searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
 
-        menu.findItem(R.id.search).setOnMenuItemClickListener(menuItem -> {
-            searchView.setFocusable(true);
-            searchView.setIconified(false);
-            return false;
+        menu.findItem(R.id.search).setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem menuItem) {
+                searchView.setFocusable(true);
+                searchView.setIconified(false);
+                return false;
+            }
         });
 
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
@@ -70,6 +76,21 @@ public class MainActivity extends AppCompatActivity {
         });
 
         return true;
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (pager.getCurrentItem() != 0) {
+            pager.setCurrentItem(0);
+        } else {
+            if (doubleBackToExitPressedOnce) {
+                finish();
+            } else {
+                Toast.makeText(MainActivity.this, "Click again to exit the app", Toast.LENGTH_SHORT).show();
+                doubleBackToExitPressedOnce = true;
+                new Handler().postDelayed(() -> doubleBackToExitPressedOnce = false, 2000);
+            }
+        }
     }
 
     private void initNavigation() {
