@@ -38,8 +38,8 @@ public class TodayFragment extends Fragment {
         binding = FragmentTodayBinding.inflate(inflater, container, false);
 
         ViewPager viewPager = getActivity().findViewById(R.id.fragment_container);
-        binding.cvHourly.setOnClickListener(view -> viewPager.setCurrentItem(2));
-        binding.cvDaily.setOnClickListener(view -> viewPager.setCurrentItem(1));
+        binding.cvHourly.setOnClickListener(view -> viewPager.setCurrentItem(1));
+        binding.cvDaily.setOnClickListener(view -> viewPager.setCurrentItem(2));
 
         loadList();
         return binding.getRoot();
