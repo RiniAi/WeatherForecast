@@ -9,6 +9,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.viewpager.widget.ViewPager;
 
 import com.example.weatherforecast.R;
 import com.example.weatherforecast.databinding.FragmentTodayBinding;
@@ -35,6 +36,11 @@ public class TodayFragment extends Fragment {
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
         binding = FragmentTodayBinding.inflate(inflater, container, false);
+
+        ViewPager viewPager = getActivity().findViewById(R.id.fragment_container);
+        binding.cvHourly.setOnClickListener(view -> viewPager.setCurrentItem(2));
+        binding.cvDaily.setOnClickListener(view -> viewPager.setCurrentItem(1));
+
         loadList();
         return binding.getRoot();
     }
