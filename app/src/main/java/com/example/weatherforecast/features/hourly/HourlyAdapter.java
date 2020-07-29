@@ -64,7 +64,7 @@ public class HourlyAdapter extends BaseAdapter<Hourly, HourlyAdapter.HourlyViewH
             case 230:
             case 231:
             case 232:
-                Picasso.get().load(R.drawable.thunderstorm).into(holder.image);
+                holder.image.setImageResource(R.drawable.thunderstorm);
                 break;
             case 300:
             case 301:
@@ -79,7 +79,7 @@ public class HourlyAdapter extends BaseAdapter<Hourly, HourlyAdapter.HourlyViewH
             case 521:
             case 522:
             case 531:
-                Picasso.get().load(R.drawable.shower_rain).into(holder.image);
+                holder.image.setImageResource(R.drawable.shower_rain);
                 break;
             case 500:
             case 501:
@@ -87,9 +87,9 @@ public class HourlyAdapter extends BaseAdapter<Hourly, HourlyAdapter.HourlyViewH
             case 503:
             case 504:
                 if (time >= 6 && time <= 18) {
-                    Picasso.get().load(R.drawable.d_rain).into(holder.image);
+                    holder.image.setImageResource(R.drawable.d_rain);
                 } else {
-                    Picasso.get().load(R.drawable.n_rain).into(holder.image);
+                    holder.image.setImageResource(R.drawable.n_rain);
                 }
                 break;
             case 511:
@@ -104,7 +104,7 @@ public class HourlyAdapter extends BaseAdapter<Hourly, HourlyAdapter.HourlyViewH
             case 620:
             case 621:
             case 622:
-                Picasso.get().load(R.drawable.show).into(holder.image);
+                holder.image.setImageResource(R.drawable.show);
                 break;
             case 701:
             case 711:
@@ -116,29 +116,29 @@ public class HourlyAdapter extends BaseAdapter<Hourly, HourlyAdapter.HourlyViewH
             case 762:
             case 771:
             case 781:
-                Picasso.get().load(R.drawable.mist).into(holder.image);
+                holder.image.setImageResource(R.drawable.mist);
                 break;
             case 800:
                 if (time >= 6 && time <= 18) {
-                    Picasso.get().load(R.drawable.d_clear_sky).into(holder.image);
+                    holder.image.setImageResource(R.drawable.d_clear_sky);
                 } else {
-                    Picasso.get().load(R.drawable.n_clear_sky).into(holder.image);
+                    holder.image.setImageResource(R.drawable.n_clear_sky);
                 }
                 break;
             case 801:
                 if (time >= 6 && time <= 18) {
-                    Picasso.get().load(R.drawable.d_few_clouds).into(holder.image);
+                    holder.image.setImageResource(R.drawable.d_few_clouds);
                 } else {
-                    Picasso.get().load(R.drawable.n_few_clouds).into(holder.image);
+                    holder.image.setImageResource(R.drawable.n_few_clouds);
                 }
                 break;
             case 803:
             case 804:
-                Picasso.get().load(R.drawable.broken_clouds).into(holder.image);
+                holder.image.setImageResource(R.drawable.broken_clouds);
                 break;
             case 802:
             default:
-                Picasso.get().load(R.drawable.scattered_clouds).into(holder.image);
+                holder.image.setImageResource(R.drawable.scattered_clouds);
         }
     }
 
