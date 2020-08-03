@@ -21,6 +21,7 @@ import java.util.Date;
 
 public class TodayFragment extends Fragment {
     private FragmentTodayBinding binding;
+    private ViewPager viewPager;
 
     public static TodayFragment newInstance(Forecast forecast) {
         Bundle bundle = new Bundle();
@@ -37,7 +38,7 @@ public class TodayFragment extends Fragment {
                              @Nullable Bundle savedInstanceState) {
         binding = FragmentTodayBinding.inflate(inflater, container, false);
 
-        ViewPager viewPager = getActivity().findViewById(R.id.fragment_container);
+        viewPager = getActivity().findViewById(R.id.fragment_container);
         binding.cvHourly.setOnClickListener(view -> viewPager.setCurrentItem(1));
         binding.cvDaily.setOnClickListener(view -> viewPager.setCurrentItem(2));
 
@@ -65,12 +66,14 @@ public class TodayFragment extends Fragment {
         binding.rvHourlyForecast.setLayoutManager(layoutManager);
         binding.rvHourlyForecast.setAdapter(hourlyAdapter);
         hourlyAdapter.setList(forecast.getTodayHourly());
+        hourlyAdapter.setOnItemClickListener((hourly) -> viewPager.setCurrentItem(1));
 
         TodayDailyAdapter dailyAdapter = new TodayDailyAdapter(getActivity());
         LinearLayoutManager nextLayoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false);
         binding.rvDailyForecast.setLayoutManager(nextLayoutManager);
         binding.rvDailyForecast.setAdapter(dailyAdapter);
         dailyAdapter.setList(forecast.getTodayDaily());
+        dailyAdapter.setOnItemClickListener((daily) -> viewPager.setCurrentItem(2));
     }
 
     private void selectImage(Current current) {
