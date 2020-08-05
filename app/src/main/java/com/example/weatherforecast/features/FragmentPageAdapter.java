@@ -4,12 +4,12 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentPagerAdapter;
+import androidx.fragment.app.FragmentStatePagerAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class FragmentPageAdapter extends FragmentPagerAdapter {
+public class FragmentPageAdapter extends FragmentStatePagerAdapter {
     private final List<Fragment> mFragmentList = new ArrayList<>();
     private final List<String> mFragmentTitleList = new ArrayList<>();
 
@@ -37,5 +37,11 @@ public class FragmentPageAdapter extends FragmentPagerAdapter {
     @Override
     public int getCount() {
         return mFragmentList.size();
+    }
+
+    @Override
+    public int getItemPosition(Object object) {
+        // POSITION_NONE makes it possible to reload the PagerAdapter
+        return POSITION_NONE;
     }
 }
