@@ -4,6 +4,9 @@ import android.content.Context;
 
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.weatherforecast.models.Daily;
+import com.example.weatherforecast.models.Hourly;
+
 import java.util.List;
 
 public abstract class BaseAdapter<T, VH extends BaseViewHolder> extends RecyclerView.Adapter<VH> {
@@ -34,5 +37,13 @@ public abstract class BaseAdapter<T, VH extends BaseViewHolder> extends Recycler
 
     public Context getContext() {
         return context;
+    }
+
+    public interface OnItemTodayHourlyClickListener {
+        void onItemClick(Hourly hourly);
+    }
+
+    public interface OnItemTodayDailyClickListener {
+        void onItemClick(Daily daily);
     }
 }
