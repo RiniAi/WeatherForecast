@@ -61,6 +61,8 @@ public class MainActivity extends AppCompatActivity {
 
     private FragmentPageAdapter adapter;
 
+    private Geocoder geocoder;
+
     // TODO: Add update FusedLocationClient, anna 05.08.2020
     private FusedLocationProviderClient fusedLocationClient;
 
@@ -78,11 +80,13 @@ public class MainActivity extends AppCompatActivity {
 
         apiService = RetrofitClientInstance.getRetrofitInstance().create(OpenWeatherMapApiService.class);
 
+        geocoder = new Geocoder(MainActivity.this, Locale.getDefault());
+
+
         initNavigation();
         navigation.setupWithViewPager(pager);
 
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
-        getGpsData();
     }
 
 
@@ -140,7 +144,7 @@ public class MainActivity extends AppCompatActivity {
                     Log.i("FusedLocationClient", "Permission is obtained");
                     fusedLocationClient.getLastLocation().addOnSuccessListener(this, this::getLtdLng);
                 } else {
-                    Toast.makeText(this, "Permission denied", Toast.LENGTH_LONG).show();
+                    Toast.makeText(this, R.string.main_activity_permission_denied, Toast.LENGTH_LONG).show();
                     Log.e("FusedLocationClient", "Permission denied");
                 }
                 break;
@@ -152,9 +156,12 @@ public class MainActivity extends AppCompatActivity {
         if (location != null) {
             latitude = location.getLatitude();
             longitude = location.getLongitude();
+            determineCityByCoordinates(latitude, longitude);
             loadForecast(latitude, longitude);
             Log.i("FusedLocationClient", "Location" + " " + latitude + " " + longitude);
         } else {
+            hideProgressBarAndFragment();
+            Toast.makeText(this, "Check if GPS is enabled", Toast.LENGTH_LONG).show();
             Log.e("FusedLocationClient", "Location is null");
         }
     }
@@ -167,6 +174,15 @@ public class MainActivity extends AppCompatActivity {
         if (searchManager != null) {
             searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
         }
+
+        menu.findItem(R.id.gps).setOnMenuItemClickListener(menuItem -> {
+            getGpsData();
+            searchView.clearFocus();
+            menu.findItem(R.id.search).collapseActionView();
+
+            return true;
+        });
+
         menu.findItem(R.id.search).setOnMenuItemClickListener(menuItem -> {
             searchView.setFocusable(true);
             searchView.setIconified(false);
@@ -182,7 +198,7 @@ public class MainActivity extends AppCompatActivity {
                 binding.progressBar.setVisibility(View.VISIBLE);
 
 
-                initGeoCoder(searchView.getQuery().toString());
+                getCoordinatesCity();
                 return true;
             }
 
@@ -194,16 +210,12 @@ public class MainActivity extends AppCompatActivity {
         return true;
     }
 
-    private void initGeoCoder(String locationName) {
-        Geocoder geocoder = new Geocoder(MainActivity.this, Locale.getDefault());
+    private void getCoordinatesCity() {
         List<Address> location = new ArrayList<>();
         try {
-            location = geocoder.getFromLocationName(locationName, 1);
+            location = geocoder.getFromLocationName(searchView.getQuery().toString(), 1);
             Log.i("Geolocation", "Location" + " " + location + " " + location.size());
         } catch (IOException e) {
-            binding.fragmentContainer.setVisibility(View.VISIBLE);
-            binding.progressBar.setVisibility(View.GONE);
-
             showError();
             Log.e("Geolocation", "Impossible to connect to GeoCoder", e);
         } finally {
@@ -217,6 +229,21 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    private void determineCityByCoordinates(double latitude, double longitude) {
+        List<Address> location = new ArrayList<>();
+        try {
+            location = geocoder.getFromLocation(latitude, longitude, 1);
+            Log.i("Geolocation", "Location" + " " + location + " " + location.size());
+        } catch (IOException e) {
+            showError();
+            Log.e("Geolocation", "Impossible to connect to GeoCoder", e);
+        } finally {
+            if (location.size() != 0) {
+                binding.toolbarMainActivity.toolbar.setTitle(location.get(0).getLocality() + " " + location.get(0).getAdminArea());
+                Log.i("Geolocation", "Location" + location.toString());
+            }
+        }
+    }
 
     private void loadForecast(double lat, double lon) {
         disposables.clear();
@@ -256,7 +283,12 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void showError() {
-        binding.progressBar.setVisibility(View.GONE);
+        hideProgressBarAndFragment();
         Toast.makeText(this, R.string.main_activity_try_later, Toast.LENGTH_LONG).show();
+    }
+
+    private void hideProgressBarAndFragment() {
+        binding.progressBar.setVisibility(View.GONE);
+        binding.fragmentContainer.setVisibility(View.GONE);
     }
 }
