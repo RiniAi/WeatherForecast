@@ -2,14 +2,17 @@ package com.example.weatherforecast.features.main;
 
 import android.Manifest;
 import android.app.SearchManager;
+import android.content.Context;
 import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
 import android.view.Menu;
+import android.view.View;
 import android.widget.SearchView;
 import android.widget.Toast;
 
@@ -28,6 +31,9 @@ import com.example.weatherforecast.models.Forecast;
 import com.example.weatherforecast.network.OpenWeatherMapApiService;
 import com.example.weatherforecast.network.RetrofitClientInstance;
 import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationCallback;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.material.tabs.TabLayout;
 
@@ -36,9 +42,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
+import io.reactivex.rxjava3.core.Single;
+import io.reactivex.rxjava3.disposables.CompositeDisposable;
+import io.reactivex.rxjava3.disposables.Disposable;
+import io.reactivex.rxjava3.schedulers.Schedulers;
 
 public class MainActivity extends AppCompatActivity {
     private boolean doubleBackToExitPressedOnce = false;
@@ -53,9 +61,13 @@ public class MainActivity extends AppCompatActivity {
     private double latitude;
     private double longitude;
 
+    private CompositeDisposable disposables;
+    private OpenWeatherMapApiService apiService;
+
     private FragmentPageAdapter adapter;
 
-    // TODO: Add update FusedLocationClient, anna 05.08.2020
+    private Geocoder geocoder;
+
     private FusedLocationProviderClient fusedLocationClient;
 
     @Override
@@ -65,11 +77,30 @@ public class MainActivity extends AppCompatActivity {
         setContentView(binding.getRoot());
         setSupportActionBar(binding.toolbarMainActivity.toolbar);
 
+        binding.progressBar.setVisibility(View.GONE);
+        binding.fragmentContainer.setVisibility(View.GONE);
+
+        disposables = new CompositeDisposable();
+
+        apiService = RetrofitClientInstance.getRetrofitInstance().create(OpenWeatherMapApiService.class);
+
+        geocoder = new Geocoder(MainActivity.this, Locale.getDefault());
+
         initNavigation();
         navigation.setupWithViewPager(pager);
 
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
-        getGpsData();
+    }
+
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        unsubscribe();
+    }
+
+    public void unsubscribe() {
+        disposables.clear();
     }
 
     @Override
@@ -80,7 +111,7 @@ public class MainActivity extends AppCompatActivity {
             if (doubleBackToExitPressedOnce) {
                 finish();
             } else {
-                Toast.makeText(MainActivity.this, "Click again to exit the app", Toast.LENGTH_SHORT).show();
+                Toast.makeText(MainActivity.this, R.string.main_activity_click_again, Toast.LENGTH_LONG).show();
                 doubleBackToExitPressedOnce = true;
                 new Handler().postDelayed(() -> doubleBackToExitPressedOnce = false, 2000);
             }
@@ -93,6 +124,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void getGpsData() {
+        binding.progressBar.setVisibility(View.VISIBLE);
+
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
                 ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION},
@@ -114,9 +147,9 @@ public class MainActivity extends AppCompatActivity {
                         return;
                     }
                     Log.i("FusedLocationClient", "Permission is obtained");
-                    fusedLocationClient.getLastLocation().addOnSuccessListener(this, this::getLtdLng);
+                    fusedLocationClient.getLastLocation().addOnSuccessListener(this::getLtdLng);
                 } else {
-                    Toast.makeText(this, "Permission denied", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, R.string.main_activity_permission_denied, Toast.LENGTH_LONG).show();
                     Log.e("FusedLocationClient", "Permission denied");
                 }
                 break;
@@ -131,7 +164,40 @@ public class MainActivity extends AppCompatActivity {
             loadForecast(latitude, longitude);
             Log.i("FusedLocationClient", "Location" + " " + latitude + " " + longitude);
         } else {
-            Log.e("FusedLocationClient", "Location is null");
+            LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+            boolean gpsEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+            if (gpsEnabled) {
+                LocationRequest mLocationRequest = LocationRequest.create();
+                mLocationRequest.setInterval(60000);
+                mLocationRequest.setFastestInterval(5000);
+                mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+                LocationCallback mLocationCallback = new LocationCallback() {
+                    @Override
+                    public void onLocationResult(LocationResult locationResult) {
+                        if (locationResult == null) {
+                            return;
+                        }
+                        for (Location location : locationResult.getLocations()) {
+                            if (location != null) {
+                                latitude = location.getLatitude();
+                                longitude = location.getLongitude();
+                                loadForecast(latitude, longitude);
+                                Log.i("FusedLocationClient", "Location" + " " + latitude + " " + longitude);
+                            }
+                        }
+                    }
+                };
+                if (ActivityCompat.checkSelfPermission(MainActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
+                        ActivityCompat.checkSelfPermission(MainActivity.this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                    return;
+                }
+                LocationServices.getFusedLocationProviderClient(MainActivity.this).requestLocationUpdates(mLocationRequest, mLocationCallback, null);
+            } else {
+                hideProgressBarAndFragment();
+                binding.toolbarMainActivity.toolbar.setTitle(R.string.app_name);
+                Toast.makeText(MainActivity.this, "Check if GPS is enabled", Toast.LENGTH_LONG).show();
+                Log.e("FusedLocationClient", "Location is null");
+            }
         }
     }
 
@@ -143,6 +209,15 @@ public class MainActivity extends AppCompatActivity {
         if (searchManager != null) {
             searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
         }
+
+        menu.findItem(R.id.gps).setOnMenuItemClickListener(menuItem -> {
+            getGpsData();
+            searchView.clearFocus();
+            menu.findItem(R.id.search).collapseActionView();
+
+            return true;
+        });
+
         menu.findItem(R.id.search).setOnMenuItemClickListener(menuItem -> {
             searchView.setFocusable(true);
             searchView.setIconified(false);
@@ -154,7 +229,10 @@ public class MainActivity extends AppCompatActivity {
             public boolean onQueryTextSubmit(String s) {
                 searchView.clearFocus();
                 menu.findItem(R.id.search).collapseActionView();
-                initGeoCoder();
+
+                binding.progressBar.setVisibility(View.VISIBLE);
+
+                getCoordinatesCity();
                 return true;
             }
 
@@ -166,49 +244,85 @@ public class MainActivity extends AppCompatActivity {
         return true;
     }
 
-    private void initGeoCoder() {
-        Geocoder geocoder = new Geocoder(MainActivity.this, Locale.getDefault());
+    private void getCoordinatesCity() {
         List<Address> location = new ArrayList<>();
         try {
             location = geocoder.getFromLocationName(searchView.getQuery().toString(), 1);
             Log.i("Geolocation", "Location" + " " + location + " " + location.size());
         } catch (IOException e) {
-            Toast.makeText(this, "Impossible to connect to GeoCoder", Toast.LENGTH_SHORT).show();
+            showError();
             Log.e("Geolocation", "Impossible to connect to GeoCoder", e);
         } finally {
-            double lat = location.get(0).getLatitude();
-            double lon = location.get(0).getLongitude();
-            Log.i("Geolocation", "Location" + " " + lat + " " + lon);
-            binding.toolbarMainActivity.toolbar.setTitle(location.get(0).getFeatureName() + " " + location.get(0).getAdminArea());
-            loadForecast(lat, lon);
+            if (location.size() != 0) {
+                double lat = location.get(0).getLatitude();
+                double lon = location.get(0).getLongitude();
+                Log.i("Geolocation", "Location" + " " + lat + " " + lon);
+                loadForecast(lat, lon);
+            }
+        }
+    }
+
+    private void determineCityByCoordinates(double latitude, double longitude) {
+        List<Address> location = new ArrayList<>();
+        try {
+            location = geocoder.getFromLocation(latitude, longitude, 1);
+            Log.i("Geolocation", "Location" + " " + location + " " + location.size());
+        } catch (IOException e) {
+            showError();
+            Log.e("Geolocation", "Impossible to connect to GeoCoder", e);
+        } finally {
+            if (location.size() != 0) {
+                binding.toolbarMainActivity.toolbar.setTitle(location.get(0).getLocality() + " " + location.get(0).getAdminArea());
+                Log.i("Geolocation", "Location" + location.toString());
+            }
         }
     }
 
     private void loadForecast(double lat, double lon) {
-        OpenWeatherMapApiService apiService = RetrofitClientInstance.getRetrofitInstance().create(OpenWeatherMapApiService.class);
-        Call<Forecast> call = apiService.getForecast(lat, lon);
-        call.enqueue(new Callback<Forecast>() {
-            @Override
-            public void onResponse(@NonNull Call<Forecast> call, @NonNull Response<Forecast> response) {
-                Log.i("Response", response.toString());
-                Forecast forecast = response.body();
-                showForecast(forecast);
-            }
+        disposables.clear();
+        Disposable subscription = run(lat, lon)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        // onNext
+                        forecast -> {
+                            determineCityByCoordinates(latitude, longitude);
+                            showForecast(forecast);
 
-            @Override
-            public void onFailure(@NonNull Call<Forecast> call, @NonNull Throwable t) {
-                Log.e("Response", t.getMessage());
-                Toast.makeText(MainActivity.this, "Failed to get weather data" + t.getMessage(), Toast.LENGTH_SHORT).show();
-            }
-        });
+                        },
+                        // onError
+                        throwable -> {
+                            Log.e("Response", throwable.getMessage());
+                            showError();
+                        }
+                );
+        disposables.add(subscription);
+    }
+
+    private Single<Forecast> run(double lat, double lon) {
+        return apiService.getForecast(lat, lon);
     }
 
     private void showForecast(Forecast forecast) {
+        binding.fragmentContainer.setVisibility(View.VISIBLE);
+        binding.progressBar.setVisibility(View.GONE);
+
         adapter = new FragmentPageAdapter(getSupportFragmentManager());
+
         adapter.addFragment(TodayFragment.newInstance(forecast), "Today");
         adapter.addFragment(HourlyFragment.newInstance(forecast.getHourly()), "Hourly");
         adapter.addFragment(DailyFragment.newInstance(forecast.getDaily()), "Daily");
 
         pager.setAdapter(adapter);
+    }
+
+    public void showError() {
+        hideProgressBarAndFragment();
+        Toast.makeText(this, R.string.main_activity_try_later, Toast.LENGTH_LONG).show();
+    }
+
+    private void hideProgressBarAndFragment() {
+        binding.progressBar.setVisibility(View.GONE);
+        binding.fragmentContainer.setVisibility(View.GONE);
     }
 }

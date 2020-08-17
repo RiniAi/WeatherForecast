@@ -3,6 +3,12 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
+        android:id="@+id/gps"
+        android:icon="@android:drawable/ic_menu_compass"
+        android:title="Gps"
+        app:showAsAction="always|collapseActionView" />
+
+    <item
         android:id="@+id/search"
         android:icon="@android:drawable/ic_menu_search"
         android:title="Search"
