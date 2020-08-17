@@ -2,10 +2,12 @@ package com.example.weatherforecast.features.main;
 
 import android.Manifest;
 import android.app.SearchManager;
+import android.content.Context;
 import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -29,6 +31,9 @@ import com.example.weatherforecast.models.Forecast;
 import com.example.weatherforecast.network.OpenWeatherMapApiService;
 import com.example.weatherforecast.network.RetrofitClientInstance;
 import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationCallback;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.material.tabs.TabLayout;
 
@@ -63,7 +68,6 @@ public class MainActivity extends AppCompatActivity {
 
     private Geocoder geocoder;
 
-    // TODO: Add update FusedLocationClient, anna 05.08.2020
     private FusedLocationProviderClient fusedLocationClient;
 
     @Override
@@ -81,7 +85,6 @@ public class MainActivity extends AppCompatActivity {
         apiService = RetrofitClientInstance.getRetrofitInstance().create(OpenWeatherMapApiService.class);
 
         geocoder = new Geocoder(MainActivity.this, Locale.getDefault());
-
 
         initNavigation();
         navigation.setupWithViewPager(pager);
@@ -121,6 +124,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void getGpsData() {
+        binding.progressBar.setVisibility(View.VISIBLE);
+
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
                 ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION},
@@ -142,7 +147,7 @@ public class MainActivity extends AppCompatActivity {
                         return;
                     }
                     Log.i("FusedLocationClient", "Permission is obtained");
-                    fusedLocationClient.getLastLocation().addOnSuccessListener(this, this::getLtdLng);
+                    fusedLocationClient.getLastLocation().addOnSuccessListener(this::getLtdLng);
                 } else {
                     Toast.makeText(this, R.string.main_activity_permission_denied, Toast.LENGTH_LONG).show();
                     Log.e("FusedLocationClient", "Permission denied");
@@ -156,13 +161,43 @@ public class MainActivity extends AppCompatActivity {
         if (location != null) {
             latitude = location.getLatitude();
             longitude = location.getLongitude();
-            determineCityByCoordinates(latitude, longitude);
             loadForecast(latitude, longitude);
             Log.i("FusedLocationClient", "Location" + " " + latitude + " " + longitude);
         } else {
-            hideProgressBarAndFragment();
-            Toast.makeText(this, "Check if GPS is enabled", Toast.LENGTH_LONG).show();
-            Log.e("FusedLocationClient", "Location is null");
+            LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+            boolean gpsEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+            if (gpsEnabled) {
+                LocationRequest mLocationRequest = LocationRequest.create();
+                mLocationRequest.setInterval(60000);
+                mLocationRequest.setFastestInterval(5000);
+                mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+                LocationCallback mLocationCallback = new LocationCallback() {
+                    @Override
+                    public void onLocationResult(LocationResult locationResult) {
+                        if (locationResult == null) {
+                            return;
+                        }
+                        for (Location location : locationResult.getLocations()) {
+                            if (location != null) {
+                                latitude = location.getLatitude();
+                                longitude = location.getLongitude();
+                                loadForecast(latitude, longitude);
+                                Log.i("FusedLocationClient", "Location" + " " + latitude + " " + longitude);
+                            }
+                        }
+                    }
+                };
+                if (ActivityCompat.checkSelfPermission(MainActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
+                        ActivityCompat.checkSelfPermission(MainActivity.this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                    return;
+                }
+                LocationServices.getFusedLocationProviderClient(MainActivity.this).requestLocationUpdates(mLocationRequest, mLocationCallback, null);
+            } else {
+                hideProgressBarAndFragment();
+                binding.toolbarMainActivity.toolbar.setTitle(R.string.app_name);
+                Toast.makeText(MainActivity.this, "Check if GPS is enabled", Toast.LENGTH_LONG).show();
+                Log.e("FusedLocationClient", "Location is null");
+            }
         }
     }
 
@@ -197,7 +232,6 @@ public class MainActivity extends AppCompatActivity {
 
                 binding.progressBar.setVisibility(View.VISIBLE);
 
-
                 getCoordinatesCity();
                 return true;
             }
@@ -223,7 +257,6 @@ public class MainActivity extends AppCompatActivity {
                 double lat = location.get(0).getLatitude();
                 double lon = location.get(0).getLongitude();
                 Log.i("Geolocation", "Location" + " " + lat + " " + lon);
-                binding.toolbarMainActivity.toolbar.setTitle(location.get(0).getFeatureName() + " " + location.get(0).getAdminArea());
                 loadForecast(lat, lon);
             }
         }
@@ -253,6 +286,7 @@ public class MainActivity extends AppCompatActivity {
                 .subscribe(
                         // onNext
                         forecast -> {
+                            determineCityByCoordinates(latitude, longitude);
                             showForecast(forecast);
 
                         },

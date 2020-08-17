@@ -10,7 +10,7 @@
     <string name="humidity">%1$d%%</string>
     <string name="pressure">%1$d hpa</string>
 
-    <string name="main_activity_try_later">Something went wrong…Please try later!</string>
+    <string name="main_activity_try_later">Something went wrong…Check your Internet connection!</string>
     <string name="main_activity_click_again">Click again to exit the app</string>
     <string name="main_activity_permission_denied">Permission denied!</string>
 </resources>
