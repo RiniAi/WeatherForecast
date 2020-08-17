@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
 import android.view.Menu;
+import android.view.View;
 import android.widget.SearchView;
 import android.widget.Toast;
 
@@ -36,9 +37,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
+import io.reactivex.rxjava3.core.Single;
+import io.reactivex.rxjava3.disposables.CompositeDisposable;
+import io.reactivex.rxjava3.disposables.Disposable;
+import io.reactivex.rxjava3.schedulers.Schedulers;
 
 public class MainActivity extends AppCompatActivity {
     private boolean doubleBackToExitPressedOnce = false;
@@ -53,6 +56,9 @@ public class MainActivity extends AppCompatActivity {
     private double latitude;
     private double longitude;
 
+    private CompositeDisposable disposables;
+    private OpenWeatherMapApiService apiService;
+
     private FragmentPageAdapter adapter;
 
     // TODO: Add update FusedLocationClient, anna 05.08.2020
@@ -65,11 +71,29 @@ public class MainActivity extends AppCompatActivity {
         setContentView(binding.getRoot());
         setSupportActionBar(binding.toolbarMainActivity.toolbar);
 
+        binding.progressBar.setVisibility(View.GONE);
+        binding.fragmentContainer.setVisibility(View.GONE);
+
+        disposables = new CompositeDisposable();
+
+        apiService = RetrofitClientInstance.getRetrofitInstance().create(OpenWeatherMapApiService.class);
+
         initNavigation();
         navigation.setupWithViewPager(pager);
 
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
         getGpsData();
+    }
+
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        unsubscribe();
+    }
+
+    public void unsubscribe() {
+        disposables.clear();
     }
 
     @Override
@@ -80,7 +104,7 @@ public class MainActivity extends AppCompatActivity {
             if (doubleBackToExitPressedOnce) {
                 finish();
             } else {
-                Toast.makeText(MainActivity.this, "Click again to exit the app", Toast.LENGTH_SHORT).show();
+                Toast.makeText(MainActivity.this, R.string.main_activity_click_again, Toast.LENGTH_LONG).show();
                 doubleBackToExitPressedOnce = true;
                 new Handler().postDelayed(() -> doubleBackToExitPressedOnce = false, 2000);
             }
@@ -116,7 +140,7 @@ public class MainActivity extends AppCompatActivity {
                     Log.i("FusedLocationClient", "Permission is obtained");
                     fusedLocationClient.getLastLocation().addOnSuccessListener(this, this::getLtdLng);
                 } else {
-                    Toast.makeText(this, "Permission denied", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, "Permission denied", Toast.LENGTH_LONG).show();
                     Log.e("FusedLocationClient", "Permission denied");
                 }
                 break;
@@ -154,7 +178,11 @@ public class MainActivity extends AppCompatActivity {
             public boolean onQueryTextSubmit(String s) {
                 searchView.clearFocus();
                 menu.findItem(R.id.search).collapseActionView();
-                initGeoCoder();
+
+                binding.progressBar.setVisibility(View.VISIBLE);
+
+
+                initGeoCoder(searchView.getQuery().toString());
                 return true;
             }
 
@@ -166,49 +194,69 @@ public class MainActivity extends AppCompatActivity {
         return true;
     }
 
-    private void initGeoCoder() {
+    private void initGeoCoder(String locationName) {
         Geocoder geocoder = new Geocoder(MainActivity.this, Locale.getDefault());
         List<Address> location = new ArrayList<>();
         try {
-            location = geocoder.getFromLocationName(searchView.getQuery().toString(), 1);
+            location = geocoder.getFromLocationName(locationName, 1);
             Log.i("Geolocation", "Location" + " " + location + " " + location.size());
         } catch (IOException e) {
-            Toast.makeText(this, "Impossible to connect to GeoCoder", Toast.LENGTH_SHORT).show();
+            binding.fragmentContainer.setVisibility(View.VISIBLE);
+            binding.progressBar.setVisibility(View.GONE);
+
+            showError();
             Log.e("Geolocation", "Impossible to connect to GeoCoder", e);
         } finally {
-            double lat = location.get(0).getLatitude();
-            double lon = location.get(0).getLongitude();
-            Log.i("Geolocation", "Location" + " " + lat + " " + lon);
-            binding.toolbarMainActivity.toolbar.setTitle(location.get(0).getFeatureName() + " " + location.get(0).getAdminArea());
-            loadForecast(lat, lon);
+            if (location.size() != 0) {
+                double lat = location.get(0).getLatitude();
+                double lon = location.get(0).getLongitude();
+                Log.i("Geolocation", "Location" + " " + lat + " " + lon);
+                binding.toolbarMainActivity.toolbar.setTitle(location.get(0).getFeatureName() + " " + location.get(0).getAdminArea());
+                loadForecast(lat, lon);
+            }
         }
     }
 
-    private void loadForecast(double lat, double lon) {
-        OpenWeatherMapApiService apiService = RetrofitClientInstance.getRetrofitInstance().create(OpenWeatherMapApiService.class);
-        Call<Forecast> call = apiService.getForecast(lat, lon);
-        call.enqueue(new Callback<Forecast>() {
-            @Override
-            public void onResponse(@NonNull Call<Forecast> call, @NonNull Response<Forecast> response) {
-                Log.i("Response", response.toString());
-                Forecast forecast = response.body();
-                showForecast(forecast);
-            }
 
-            @Override
-            public void onFailure(@NonNull Call<Forecast> call, @NonNull Throwable t) {
-                Log.e("Response", t.getMessage());
-                Toast.makeText(MainActivity.this, "Failed to get weather data" + t.getMessage(), Toast.LENGTH_SHORT).show();
-            }
-        });
+    private void loadForecast(double lat, double lon) {
+        disposables.clear();
+        Disposable subscription = run(lat, lon)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        // onNext
+                        forecast -> {
+                            showForecast(forecast);
+
+                        },
+                        // onError
+                        throwable -> {
+                            Log.e("Response", throwable.getMessage());
+                            showError();
+                        }
+                );
+        disposables.add(subscription);
+    }
+
+    private Single<Forecast> run(double lat, double lon) {
+        return apiService.getForecast(lat, lon);
     }
 
     private void showForecast(Forecast forecast) {
+        binding.fragmentContainer.setVisibility(View.VISIBLE);
+        binding.progressBar.setVisibility(View.GONE);
+
         adapter = new FragmentPageAdapter(getSupportFragmentManager());
+
         adapter.addFragment(TodayFragment.newInstance(forecast), "Today");
         adapter.addFragment(HourlyFragment.newInstance(forecast.getHourly()), "Hourly");
         adapter.addFragment(DailyFragment.newInstance(forecast.getDaily()), "Daily");
 
         pager.setAdapter(adapter);
+    }
+
+    public void showError() {
+        binding.progressBar.setVisibility(View.GONE);
+        Toast.makeText(this, R.string.main_activity_try_later, Toast.LENGTH_LONG).show();
     }
 }
