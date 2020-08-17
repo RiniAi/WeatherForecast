@@ -62,7 +62,7 @@ public class MainActivity extends AppCompatActivity {
     private double longitude;
 
     private CompositeDisposable disposables;
-    private OpenWeatherMapApiService apiService;
+    private ForecastRepository forecastRepository;
 
     private FragmentPageAdapter adapter;
 
@@ -82,7 +82,7 @@ public class MainActivity extends AppCompatActivity {
 
         disposables = new CompositeDisposable();
 
-        apiService = RetrofitClientInstance.getRetrofitInstance().create(OpenWeatherMapApiService.class);
+        forecastRepository = new ForecastRepository();
 
         geocoder = new Geocoder(MainActivity.this, Locale.getDefault());
 
@@ -280,7 +280,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void loadForecast(double lat, double lon) {
         disposables.clear();
-        Disposable subscription = run(lat, lon)
+        Disposable subscription = forecastRepository.getForecast(lat, lon)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
@@ -297,10 +297,6 @@ public class MainActivity extends AppCompatActivity {
                         }
                 );
         disposables.add(subscription);
-    }
-
-    private Single<Forecast> run(double lat, double lon) {
-        return apiService.getForecast(lat, lon);
     }
 
     private void showForecast(Forecast forecast) {
