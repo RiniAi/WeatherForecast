@@ -117,18 +117,13 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
 
     @Override
     public void showForecast(Forecast forecast) {
-        showViewForecast();
-
+        binding.fragmentContainer.setVisibility(View.VISIBLE);
+        binding.progressBar.setVisibility(View.GONE);
         FragmentPageAdapter adapter = new FragmentPageAdapter(getSupportFragmentManager());
         adapter.addFragment(TodayFragment.newInstance(forecast), getString(R.string.main_activity_today_fragment));
         adapter.addFragment(HourlyFragment.newInstance(forecast.getHourly()), getString(R.string.main_activity_hourly_fragment));
         adapter.addFragment(DailyFragment.newInstance(forecast.getDaily()), getString(R.string.main_activity_daily_fragment));
         pager.setAdapter(adapter);
-    }
-
-    private void showViewForecast() {
-        binding.fragmentContainer.setVisibility(View.VISIBLE);
-        binding.progressBar.setVisibility(View.GONE);
     }
 
     private void showProgressBar() {
@@ -160,6 +155,7 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
     @Override
     public void permissionDenied() {
         Toast.makeText(this, R.string.main_activity_permission_denied, Toast.LENGTH_LONG).show();
+        hideProgressBarAndViewForecast();
     }
 
     @Override

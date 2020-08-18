@@ -6,7 +6,7 @@ import com.example.weatherforecast.network.RetrofitClientInstance;
 
 import io.reactivex.rxjava3.core.Single;
 
-class ForecastRepository implements Repository {
+public class ForecastRepository implements Repository {
     @Override
     public Single<Forecast> getForecast(double lat, double lon) {
         OpenWeatherMapApiService apiService = RetrofitClientInstance.getRetrofitInstance().create(OpenWeatherMapApiService.class);
