@@ -14,6 +14,8 @@
     <dimen name="text_size_medium">20sp</dimen>
     <dimen name="text_size_title">48sp</dimen>
 
+    <dimen name="main_activity_size_of_main_image">192dp</dimen>
+
     <dimen name="list_daily_item_ll_width">160dp</dimen>
     <dimen name="list_daily_item_v_height">2dp</dimen>
     <dimen name="list_daily_item_size_image">96dp</dimen>

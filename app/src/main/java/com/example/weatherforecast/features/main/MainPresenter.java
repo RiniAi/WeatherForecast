@@ -3,6 +3,7 @@ package com.example.weatherforecast.features.main;
 import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
@@ -30,6 +31,7 @@ import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 
 class MainPresenter implements MainContract.Presenter {
+    public static final String STORAGE_LOCATION = "location";
     private int locationRequestCode = 1000;
 
     private FusedLocationProviderClient fusedLocationClient;
@@ -38,17 +40,28 @@ class MainPresenter implements MainContract.Presenter {
 
     private Context context;
     private MainContract.View view;
+    private SharedPreferences sharedPreferences;
     private RequestForecastUseCase requestForecastUseCase;
 
-    public MainPresenter(Context context, MainContract.View view) {
+    public MainPresenter(Context context, MainContract.View view, SharedPreferences sharedPreferences) {
         this.context = context;
         this.disposables = new CompositeDisposable();
         this.geocoder = new Geocoder(context, Locale.getDefault());
         this.requestForecastUseCase = new RequestForecastUseCase();
+        this.sharedPreferences = sharedPreferences;
         this.fusedLocationClient = LocationServices.getFusedLocationProviderClient(context);
 
         this.view = view;
         this.view.setPresenter(this);
+    }
+
+    @Override
+    public void start() {
+        String location = sharedPreferences.getString(STORAGE_LOCATION, "");
+        if (!location.equals("")) {
+            view.showProgressBar();
+            getForecastViaQuery(location);
+        }
     }
 
     @Override
@@ -172,9 +185,16 @@ class MainPresenter implements MainContract.Presenter {
         } finally {
             if (location.size() != 0) {
                 view.setCityNameForToolbarTitle(location.get(0).getLocality(), location.get(0).getAdminArea());
+                saveLocation(location);
                 Log.i("Geolocation", "Location" + location.toString());
             }
         }
+    }
+
+    private void saveLocation(List<Address> location) {
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString(STORAGE_LOCATION, location.get(0).getLocality());
+        editor.apply();
     }
 
     @Override

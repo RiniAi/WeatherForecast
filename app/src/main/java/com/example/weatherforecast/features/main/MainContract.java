@@ -6,28 +6,30 @@ import com.example.weatherforecast.models.Forecast;
 
 public interface MainContract {
     interface View extends BaseView<Presenter> {
-        void showError();
-
         void showForecast(Forecast forecast);
 
-        void hideProgressBarAndViewForecast();
+        void showProgressBar();
 
         void setCityNameForToolbarTitle(String city, String area);
 
         void setDefaultToolbarTitle();
 
+        void hideProgressBarAndViewForecast();
+
         void checkGps();
 
         void permissionDenied();
+
+        void showError();
     }
 
     interface Presenter extends BasePresenter {
-        void getForecastViaGps();
-
-        void getForecastViaQuery(String locationName);
-
         void unsubscribe();
 
+        void getForecastViaGps();
+
         void requestPermissionsResult(int requestCode, int[] grantResults);
+
+        void getForecastViaQuery(String locationName);
     }
 }

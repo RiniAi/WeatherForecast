@@ -19,6 +19,26 @@
     </com.google.android.material.tabs.TabLayout>
 
     <LinearLayout
+        android:id="@+id/empty_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:gravity="center">
+
+        <ImageView
+            android:layout_width="@dimen/main_activity_size_of_main_image"
+            android:layout_height="@dimen/main_activity_size_of_main_image"
+            android:layout_marginBottom="@dimen/margin_padding_8dp"
+            android:src="@drawable/umbrella"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="@string/search_was_not_performed" />
+    </LinearLayout>
+
+    <LinearLayout
         android:id="@+id/progress_bar"
         android:layout_width="match_parent"
         android:layout_height="match_parent">

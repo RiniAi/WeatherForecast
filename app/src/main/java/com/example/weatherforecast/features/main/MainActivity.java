@@ -1,5 +1,6 @@
 package com.example.weatherforecast.features.main;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.Menu;
@@ -30,11 +31,12 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        presenter = new MainPresenter(this, this);
+        presenter = new MainPresenter(this, this, getPreferences(Context.MODE_PRIVATE));
 
         initViewBinding();
         initNavigation();
         hideProgressBarAndViewForecast();
+        presenter.start();
     }
 
     @Override
@@ -126,8 +128,10 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
         pager.setAdapter(adapter);
     }
 
-    private void showProgressBar() {
+    @Override
+    public void showProgressBar() {
         binding.fragmentContainer.setVisibility(View.GONE);
+        binding.emptyView.setVisibility(View.GONE);
         binding.progressBar.setVisibility(View.VISIBLE);
     }
 
@@ -144,6 +148,7 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
     @Override
     public void hideProgressBarAndViewForecast() {
         binding.fragmentContainer.setVisibility(View.GONE);
+        binding.emptyView.setVisibility(View.VISIBLE);
         binding.progressBar.setVisibility(View.GONE);
     }
 
