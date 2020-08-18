@@ -13,7 +13,6 @@ import com.example.weatherforecast.R;
 import com.example.weatherforecast.base.BaseAdapter;
 import com.example.weatherforecast.base.BaseViewHolder;
 import com.example.weatherforecast.models.Hourly;
-import com.squareup.picasso.Picasso;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -44,9 +43,9 @@ public class HourlyAdapter extends BaseAdapter<Hourly, HourlyAdapter.HourlyViewH
         holder.wind.setText(getContext().getString(R.string.hourly_wind_speed, (int) hourly.getWindSpeed()));
         holder.clouds.setText(getContext().getString(R.string.clouds, (int) hourly.getClouds()));
         if (hourly.getClouds() < 50) {
-            Picasso.get().load(R.drawable.not_drop).into(holder.cloudsImage);
+            holder.cloudsImage.setImageResource(R.drawable.not_drop);
         } else {
-            Picasso.get().load(R.drawable.drop).into(holder.cloudsImage);
+            holder.cloudsImage.setImageResource(R.drawable.drop);
         }
         selectImage(hourly, holder);
     }
