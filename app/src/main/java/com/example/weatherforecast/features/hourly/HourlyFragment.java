@@ -10,14 +10,20 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
+import com.example.weatherforecast.App;
 import com.example.weatherforecast.databinding.FragmentHourlyBinding;
 import com.example.weatherforecast.models.Hourly;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.inject.Inject;
+
 public class HourlyFragment extends Fragment {
     private FragmentHourlyBinding binding;
+
+    @Inject
+    HourlyAdapter hourlyAdapter;
 
     public static HourlyFragment newInstance(List<Hourly> hourlyList) {
         Bundle bundle = new Bundle();
@@ -33,16 +39,17 @@ public class HourlyFragment extends Fragment {
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
         binding = FragmentHourlyBinding.inflate(inflater, container, false);
+        App.getAppComponent().activityComponent().inject(this);
         loadList();
         return binding.getRoot();
     }
 
     private void loadList() {
         List<Hourly> hourlyList = (ArrayList<Hourly>) getArguments().getSerializable("hourly");
-        HourlyAdapter hourlyAdapter = new HourlyAdapter(getActivity());
         LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
         binding.rvHourlyForecast.setLayoutManager(layoutManager);
         binding.rvHourlyForecast.setAdapter(hourlyAdapter);
+        hourlyAdapter.setContext(getActivity());
         hourlyAdapter.setList(hourlyList);
     }
 }

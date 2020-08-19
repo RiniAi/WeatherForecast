@@ -18,9 +18,12 @@ import com.example.weatherforecast.models.Daily;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import javax.inject.Inject;
+
 public class TodayDailyAdapter extends BaseAdapter<Daily, TodayDailyAdapter.HourlyForecastViewHolder> {
     private OnItemTodayDailyClickListener onClickListener;
 
+    @Inject
     public TodayDailyAdapter(Context context) {
         super(context);
     }

@@ -11,6 +11,7 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.viewpager.widget.ViewPager;
 
+import com.example.weatherforecast.App;
 import com.example.weatherforecast.R;
 import com.example.weatherforecast.databinding.FragmentTodayBinding;
 import com.example.weatherforecast.models.Current;
@@ -19,9 +20,16 @@ import com.example.weatherforecast.models.Forecast;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import javax.inject.Inject;
+
 public class TodayFragment extends Fragment {
     private FragmentTodayBinding binding;
     private ViewPager viewPager;
+
+    @Inject
+    TodayHourlyAdapter hourlyAdapter;
+    @Inject
+    TodayDailyAdapter dailyAdapter;
 
     public static TodayFragment newInstance(Forecast forecast) {
         Bundle bundle = new Bundle();
@@ -37,6 +45,7 @@ public class TodayFragment extends Fragment {
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
         binding = FragmentTodayBinding.inflate(inflater, container, false);
+        App.getAppComponent().activityComponent().inject(this);
 
         viewPager = getActivity().findViewById(R.id.fragment_container);
         binding.cvHourly.setOnClickListener(view -> viewPager.setCurrentItem(1));
@@ -61,17 +70,17 @@ public class TodayFragment extends Fragment {
         binding.tvUvi.setText(String.valueOf(current.getUvi()));
         selectImage(current);
 
-        TodayHourlyAdapter hourlyAdapter = new TodayHourlyAdapter(getActivity());
         LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false);
         binding.rvHourlyForecast.setLayoutManager(layoutManager);
         binding.rvHourlyForecast.setAdapter(hourlyAdapter);
+        hourlyAdapter.setContext(getContext());
         hourlyAdapter.setList(forecast.getTodayHourly());
         hourlyAdapter.setOnItemClickListener((hourly) -> viewPager.setCurrentItem(1));
 
-        TodayDailyAdapter dailyAdapter = new TodayDailyAdapter(getActivity());
         LinearLayoutManager nextLayoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false);
         binding.rvDailyForecast.setLayoutManager(nextLayoutManager);
         binding.rvDailyForecast.setAdapter(dailyAdapter);
+        hourlyAdapter.setContext(getContext());
         dailyAdapter.setList(forecast.getTodayDaily());
         dailyAdapter.setOnItemClickListener((daily) -> viewPager.setCurrentItem(2));
     }

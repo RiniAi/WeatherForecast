@@ -17,8 +17,11 @@ import com.example.weatherforecast.models.Hourly;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import javax.inject.Inject;
+
 public class HourlyAdapter extends BaseAdapter<Hourly, HourlyAdapter.HourlyViewHolder> {
 
+    @Inject
     public HourlyAdapter(Context context) {
         super(context);
     }

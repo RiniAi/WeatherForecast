@@ -17,6 +17,11 @@ public abstract class BaseAdapter<T, VH extends BaseViewHolder> extends Recycler
         this.context = context;
     }
 
+    // TODO: when implementing dependencies for the Adapter-Fragment, without this method, the design is lost (need context of getActivity)
+    public void setContext (Context context) {
+        this.context = context;
+    }
+
     public void setList(List<T> list) {
         this.list = list;
         notifyDataSetChanged();

@@ -17,8 +17,10 @@ import com.example.weatherforecast.models.Daily;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-public class DailyAdapter extends BaseAdapter<Daily, DailyAdapter.DailyViewHolder> {
+import javax.inject.Inject;
 
+public class DailyAdapter extends BaseAdapter<Daily, DailyAdapter.DailyViewHolder> {
+    @Inject
     public DailyAdapter(Context context) {
         super(context);
     }
