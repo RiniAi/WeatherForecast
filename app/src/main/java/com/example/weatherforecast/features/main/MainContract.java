@@ -16,7 +16,9 @@ public interface MainContract {
 
         void hideProgressBarAndViewForecast();
 
-        void checkGps();
+        void checkGpsEnabled();
+
+        void checkInternetConnection();
 
         void permissionDenied();
 
@@ -25,6 +27,10 @@ public interface MainContract {
 
     interface Presenter extends BasePresenter<View> {
         void unsubscribe();
+
+        boolean isGpsAvailable();
+
+        boolean isInternetAvailable();
 
         void getForecastViaGps();
 

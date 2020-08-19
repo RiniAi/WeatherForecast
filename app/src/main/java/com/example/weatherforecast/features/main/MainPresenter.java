@@ -9,6 +9,8 @@ import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationManager;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.util.Log;
 
 import androidx.core.app.ActivityCompat;
@@ -65,16 +67,33 @@ public class MainPresenter implements MainContract.Presenter {
 
     @Override
     public void start() {
-        String location = sharedPreferences.getString(STORAGE_LOCATION, "");
-        if (!location.equals("")) {
-            view.showProgressBar();
-            getForecastViaQuery(location);
+        if (isInternetAvailable()) {
+            String location = sharedPreferences.getString(STORAGE_LOCATION, "");
+            if (!location.equals("")) {
+                view.showProgressBar();
+                getForecastViaQuery(location);
+            }
+        } else {
+            view.checkInternetConnection();
         }
     }
 
     @Override
     public void unsubscribe() {
         disposables.clear();
+    }
+
+    @Override
+    public boolean isGpsAvailable() {
+        LocationManager locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
+        return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+    }
+
+    @Override
+    public boolean isInternetAvailable() {
+        ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+        return activeNetwork != null && activeNetwork.isConnectedOrConnecting();
     }
 
     @Override
@@ -124,15 +143,14 @@ public class MainPresenter implements MainContract.Presenter {
         //  - google Play services on the device have restarted, and there is no active Fused Location Provider client that has requested location after the services restarted.
         //  To avoid this situation we create a new client and request location updates yourself.
         else {
-            LocationManager locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
-            if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+            if (isGpsAvailable()) {
                 updateFusedLocationClient();
             }
             // Case when there was no last location and it also failed to update
             else {
                 view.hideProgressBarAndViewForecast();
                 view.setDefaultToolbarTitle();
-                view.checkGps();
+                view.checkGpsEnabled();
                 Log.e("FusedLocationClient", "Location is null");
             }
         }

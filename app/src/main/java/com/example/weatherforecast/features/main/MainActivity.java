@@ -80,10 +80,18 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
         SearchView searchView = (SearchView) menu.findItem(R.id.search).getActionView();
 
         menu.findItem(R.id.gps).setOnMenuItemClickListener(menuItem -> {
-            showProgressBar();
-            setDefaultToolbarTitle();
+            if (presenter.isInternetAvailable() & presenter.isGpsAvailable()) {
+                showProgressBar();
+                setDefaultToolbarTitle();
+                presenter.getForecastViaGps();
+            } else if (!presenter.isInternetAvailable()) {
+                checkInternetConnection();
+            } else if (!presenter.isGpsAvailable()) {
+                checkGpsEnabled();
+            } else {
+                showError();
+            }
             menu.findItem(R.id.search).collapseActionView(); // Collapse the action view associated with this menu item
-            presenter.getForecastViaGps();
             return true;
         });
 
@@ -95,10 +103,14 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String s) {
-                showProgressBar();
-                setDefaultToolbarTitle();
+                if (presenter.isInternetAvailable()) {
+                    showProgressBar();
+                    setDefaultToolbarTitle();
+                    presenter.getForecastViaQuery(searchView.getQuery().toString());
+                } else {
+                    checkInternetConnection();
+                }
                 menu.findItem(R.id.search).collapseActionView(); // Collapse the action view associated with this menu item
-                presenter.getForecastViaQuery(searchView.getQuery().toString());
                 return true;
             }
 
@@ -146,14 +158,21 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
 
     @Override
     public void hideProgressBarAndViewForecast() {
-        binding.fragmentContainer.setVisibility(View.GONE);
-        binding.emptyView.setVisibility(View.VISIBLE);
         binding.progressBar.setVisibility(View.GONE);
     }
 
+    private void showEmptyView() {
+        binding.emptyView.setVisibility(View.VISIBLE);
+    }
+
     @Override
-    public void checkGps() {
+    public void checkGpsEnabled() {
         Toast.makeText(MainActivity.this, R.string.main_activity_check_gps_enabled, Toast.LENGTH_LONG).show();
+    }
+
+    @Override
+    public void checkInternetConnection() {
+        Toast.makeText(this, R.string.main_activity_check_internet_connection, Toast.LENGTH_LONG).show();
     }
 
     @Override
@@ -166,5 +185,6 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
     public void showError() {
         Toast.makeText(this, R.string.main_activity_try_later, Toast.LENGTH_LONG).show();
         hideProgressBarAndViewForecast();
+        showEmptyView();
     }
 }
