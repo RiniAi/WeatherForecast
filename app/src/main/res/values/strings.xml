@@ -18,7 +18,9 @@
     <string name="main_activity_try_later">Something went wrong…Try later!</string>
     <string name="main_activity_click_again">Click again to exit the app</string>
     <string name="main_activity_permission_denied">Permission denied!</string>
+    <string name="main_activity_permission_denied_last_query">Permission denied! Search was performed for the last query</string>
     <string name="main_activity_check_gps_enabled">Check if GPS is enabled!</string>
+    <string name="main_activity_check_gps_enabled_or_query">Check if GPS is enabled or enter new query…</string>
     <string name="main_activity_check_internet_connection">Check your Internet connection!</string>
     <string name="main_activity_nothing_not_found">Nothing was found for your search!</string>
 </resources>

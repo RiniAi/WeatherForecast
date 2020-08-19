@@ -2,10 +2,8 @@ package com.example.weatherforecast.features.main;
 
 import android.os.Bundle;
 import android.os.Handler;
-import android.util.Log;
 import android.view.Menu;
 import android.view.View;
-import android.widget.EditText;
 import android.widget.SearchView;
 import android.widget.Toast;
 
@@ -41,7 +39,7 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
 
         initViewBinding();
         initNavigation();
-        showEmptyView();
+        initSwipeRefresh();
         presenter.start();
     }
 
@@ -55,6 +53,15 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
         TabLayout navigation = binding.navigation;
         pager = binding.fragmentContainer;
         navigation.setupWithViewPager(pager);
+    }
+
+    private void initSwipeRefresh() {
+        binding.swipeRefresh.setOnRefreshListener(() -> new Handler().postDelayed(() -> {
+            int pageItem = pager.getCurrentItem();
+            presenter.start();
+            pager.setCurrentItem(pageItem);
+            binding.swipeRefresh.setRefreshing(false);
+        }, 4000));
     }
 
     @Override
@@ -166,6 +173,11 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
     }
 
     @Override
+    public void hideProgressBar() {
+        binding.progressBar.setVisibility(View.GONE);
+    }
+
+    @Override
     public void setCityNameForToolbarTitle(String city, String area) {
         binding.toolbarMainActivity.toolbar.setTitle(city + " " + area);
     }
@@ -181,6 +193,11 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
     }
 
     @Override
+    public void checkGpsEnabledRoQuery() {
+        Toast.makeText(MainActivity.this, R.string.main_activity_check_gps_enabled_or_query, Toast.LENGTH_LONG).show();
+    }
+
+    @Override
     public void checkInternetConnection() {
         Toast.makeText(this, R.string.main_activity_check_internet_connection, Toast.LENGTH_LONG).show();
     }
@@ -193,6 +210,11 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
     @Override
     public void permissionDenied() {
         Toast.makeText(this, R.string.main_activity_permission_denied, Toast.LENGTH_LONG).show();
+    }
+
+    @Override
+    public void permissionDeniedLastQuery() {
+        Toast.makeText(MainActivity.this, R.string.main_activity_permission_denied_last_query, Toast.LENGTH_LONG).show();
     }
 
     @Override

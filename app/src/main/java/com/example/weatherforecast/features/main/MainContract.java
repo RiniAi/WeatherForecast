@@ -14,13 +14,19 @@ public interface MainContract {
 
         void showEmptyView();
 
+        void permissionDeniedLastQuery();
+
         void showError();
+
+        void hideProgressBar();
 
         void setCityNameForToolbarTitle(String city, String area);
 
         void setDefaultToolbarTitle();
 
         void checkGpsEnabled();
+
+        void checkGpsEnabledRoQuery();
 
         void checkInternetConnection();
 
@@ -39,6 +45,8 @@ public interface MainContract {
         void getForecastViaGps();
 
         void requestPermissionsResult(int requestCode, int[] grantResults);
+
+        void checkLastQuery();
 
         void getForecastViaQuery(String locationName);
     }

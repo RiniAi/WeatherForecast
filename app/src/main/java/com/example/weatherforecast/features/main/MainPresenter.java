@@ -37,12 +37,12 @@ import io.reactivex.rxjava3.schedulers.Schedulers;
 public class MainPresenter implements MainContract.Presenter {
     public static final String STORAGE_LOCATION = "location";
     private int locationRequestCode = 1000;
+    private String locationName;
 
     private FusedLocationProviderClient fusedLocationClient;
     private CompositeDisposable disposables;
     private MainContract.View view;
     private Geocoder geocoder;
-    private String locationName;
 
     @Inject
     Context context;
@@ -68,14 +68,17 @@ public class MainPresenter implements MainContract.Presenter {
 
     @Override
     public void start() {
-        if (isInternetAvailable()) {
-            locationName = sharedPreferences.getString(STORAGE_LOCATION, "");
-            if (!locationName.equals("")) {
-                view.showProgressBar();
-                getForecastViaQuery(locationName);
-            }
-        } else {
+        locationName = sharedPreferences.getString(STORAGE_LOCATION, "");
+        if (isInternetAvailable() & isGpsAvailable()) {
+            getForecastViaGps();
+        } else if (!isInternetAvailable()) {
             view.checkInternetConnection();
+            view.hideProgressBar();
+        } else if (!isGpsAvailable() & !locationName.isEmpty()) {
+            getForecastViaQuery(locationName);
+        } else if (!isGpsAvailable() & locationName.isEmpty()) {
+            view.checkGpsEnabledRoQuery();
+            view.showEmptyView();
         }
     }
 
@@ -92,8 +95,8 @@ public class MainPresenter implements MainContract.Presenter {
 
     @Override
     public boolean isInternetAvailable() {
-        ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+        ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetwork = connectivityManager.getActiveNetworkInfo();
         return activeNetwork != null && activeNetwork.isConnectedOrConnecting();
     }
 
@@ -118,20 +121,23 @@ public class MainPresenter implements MainContract.Presenter {
                     fusedLocationClient.getLastLocation().addOnSuccessListener(this::getLtdLng);
                     Log.i("FusedLocationClient", "Permission is obtained");
                 } else {
-                    view.permissionDenied();
-                    showView();
-                    Log.e("FusedLocationClient", "Permission denied");
+                    checkLastQuery();
                 }
                 break;
             }
         }
     }
 
-    private void showView(){
-        if (!locationName.equals("")) {
+    @Override
+    public void checkLastQuery(){
+        if (locationName.isEmpty()) {
             view.showEmptyView();
+            view.permissionDenied();
+            Log.e("FusedLocationClient", "Permission denied");
         } else {
-            view.showFragmentContainer();
+            getForecastViaQuery(locationName);
+            view.permissionDeniedLastQuery();
+            Log.e("FusedLocationClient", "Permission denied. Search was performed for the last query");
         }
     }
 
@@ -158,8 +164,6 @@ public class MainPresenter implements MainContract.Presenter {
             }
             // Case when there was no last location and it also failed to update
             else {
-                view.showEmptyView();
-                view.setDefaultToolbarTitle();
                 view.checkGpsEnabled();
                 Log.e("FusedLocationClient", "Location is null");
             }
@@ -204,7 +208,6 @@ public class MainPresenter implements MainContract.Presenter {
                         // onError
                         throwable -> {
                             view.showError();
-                            showView();
                             Log.e("Response", throwable.getMessage());
                         }
                 );
@@ -218,7 +221,6 @@ public class MainPresenter implements MainContract.Presenter {
             Log.i("Geolocation", "Location" + " " + location + " " + location.size());
         } catch (IOException e) {
             view.showError();
-            showView();
             Log.e("Geolocation", "Impossible to connect to GeoCoder", e);
         } finally {
             if (location.size() != 0) {
@@ -252,12 +254,10 @@ public class MainPresenter implements MainContract.Presenter {
             Log.i("Geolocation", "Location" + " " + location + " " + location.size());
         } catch (IOException e) {
             view.showError();
-            showView();
             Log.e("Geolocation", "Impossible to connect to GeoCoder", e);
         } finally {
             if (location.size() == 0) {
                 view.nothingNotFound();
-                showView();
             } else {
                 double lat = location.get(0).getLatitude();
                 double lon = location.get(0).getLongitude();
