@@ -260,6 +260,7 @@ public class MainPresenter implements MainContract.Presenter {
         } finally {
             if (location.size() == 0) {
                 view.nothingNotFound();
+                view.hideProgressBar();
             } else {
                 double lat = location.get(0).getLatitude();
                 double lon = location.get(0).getLongitude();

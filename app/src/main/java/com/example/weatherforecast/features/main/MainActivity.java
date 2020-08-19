@@ -61,8 +61,8 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
             pageItem = pager.getCurrentItem();
             presenter.start();
             binding.swipeRefresh.setRefreshing(false);
-            dateUpdate();
         }, 4000));
+
     }
 
     @Override
@@ -213,10 +213,6 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
     @Override
     public void permissionDeniedLastQuery() {
         Toast.makeText(MainActivity.this, R.string.main_activity_permission_denied_last_query, Toast.LENGTH_LONG).show();
-    }
-
-    private void dateUpdate() {
-        Toast.makeText(MainActivity.this, R.string.main_activity_date_update, Toast.LENGTH_LONG).show();
     }
 
     @Override
