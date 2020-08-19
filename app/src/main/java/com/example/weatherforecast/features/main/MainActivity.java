@@ -2,8 +2,10 @@ package com.example.weatherforecast.features.main;
 
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.view.Menu;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.SearchView;
 import android.widget.Toast;
 
@@ -117,6 +119,11 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
             public boolean onQueryTextChange(String s) {
                 return false;
             }
+        });
+
+        searchView.setOnCloseListener(() -> {
+            menu.findItem(R.id.search).collapseActionView();
+            return false;
         });
         return true;
     }
