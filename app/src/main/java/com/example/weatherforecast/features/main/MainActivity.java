@@ -27,6 +27,7 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
     private boolean doubleBackToExitPressedOnce = false;
     private ActivityMainBinding binding;
     private ViewPager pager;
+    private int pageItem = 0;
 
     @Inject
     MainContract.Presenter presenter;
@@ -57,10 +58,10 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
 
     private void initSwipeRefresh() {
         binding.swipeRefresh.setOnRefreshListener(() -> new Handler().postDelayed(() -> {
-            int pageItem = pager.getCurrentItem();
+            pageItem = pager.getCurrentItem();
             presenter.start();
-            pager.setCurrentItem(pageItem);
             binding.swipeRefresh.setRefreshing(false);
+            dateUpdate();
         }, 4000));
     }
 
@@ -89,9 +90,9 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
         SearchView searchView = (SearchView) menu.findItem(R.id.search).getActionView();
 
         menu.findItem(R.id.gps).setOnMenuItemClickListener(menuItem -> {
+            pageItem = pager.getCurrentItem();
             if (presenter.isInternetAvailable() & presenter.isGpsAvailable()) {
                 showProgressBar();
-                setDefaultToolbarTitle();
                 presenter.getForecastViaGps();
             } else if (!presenter.isInternetAvailable()) {
                 checkInternetConnection();
@@ -112,6 +113,7 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String s) {
+                pageItem = pager.getCurrentItem();
                 if (presenter.isInternetAvailable()) {
                     showProgressBar();
                     presenter.getForecastViaQuery(searchView.getQuery().toString());
@@ -149,6 +151,7 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
         adapter.addFragment(HourlyFragment.newInstance(forecast.getHourly()), getString(R.string.main_activity_hourly_fragment));
         adapter.addFragment(DailyFragment.newInstance(forecast.getDaily()), getString(R.string.main_activity_daily_fragment));
         pager.setAdapter(adapter);
+        pager.setCurrentItem(pageItem);
     }
 
     @Override
@@ -183,11 +186,6 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
     }
 
     @Override
-    public void setDefaultToolbarTitle() {
-        binding.toolbarMainActivity.toolbar.setTitle(R.string.app_name);
-    }
-
-    @Override
     public void checkGpsEnabled() {
         Toast.makeText(MainActivity.this, R.string.main_activity_check_gps_enabled, Toast.LENGTH_LONG).show();
     }
@@ -215,6 +213,10 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
     @Override
     public void permissionDeniedLastQuery() {
         Toast.makeText(MainActivity.this, R.string.main_activity_permission_denied_last_query, Toast.LENGTH_LONG).show();
+    }
+
+    private void dateUpdate() {
+        Toast.makeText(MainActivity.this, R.string.main_activity_date_update, Toast.LENGTH_LONG).show();
     }
 
     @Override

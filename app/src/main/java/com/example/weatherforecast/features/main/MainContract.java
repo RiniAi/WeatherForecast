@@ -22,8 +22,6 @@ public interface MainContract {
 
         void setCityNameForToolbarTitle(String city, String area);
 
-        void setDefaultToolbarTitle();
-
         void checkGpsEnabled();
 
         void checkGpsEnabledRoQuery();

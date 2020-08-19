@@ -69,6 +69,8 @@ public class MainPresenter implements MainContract.Presenter {
     @Override
     public void start() {
         locationName = sharedPreferences.getString(STORAGE_LOCATION, "");
+        Log.i("FusedLocationClient", locationName);
+
         if (isInternetAvailable() & isGpsAvailable()) {
             getForecastViaGps();
         } else if (!isInternetAvailable()) {
@@ -129,7 +131,7 @@ public class MainPresenter implements MainContract.Presenter {
     }
 
     @Override
-    public void checkLastQuery(){
+    public void checkLastQuery() {
         if (locationName.isEmpty()) {
             view.showEmptyView();
             view.permissionDenied();
