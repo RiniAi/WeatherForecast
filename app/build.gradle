@@ -42,10 +42,15 @@ dependencies {
     implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
     implementation 'com.android.support:design:29.0.0'
 
+    // play services location
     implementation 'com.google.android.gms:play-services-location:17.0.0'
 
     // rxJava
     implementation 'io.reactivex.rxjava3:rxjava:3.0.0'
     implementation 'io.reactivex.rxjava3:rxandroid:3.0.0'
     implementation 'com.github.akarnokd:rxjava3-retrofit-adapter:3.0.0'
+
+    // dagger
+    api 'com.google.dagger:dagger:2.27'
+    annotationProcessor 'com.google.dagger:dagger-compiler:2.27'
 }
