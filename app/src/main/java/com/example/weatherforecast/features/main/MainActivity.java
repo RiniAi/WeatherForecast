@@ -1,6 +1,5 @@
 package com.example.weatherforecast.features.main;
 
-import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.Menu;
@@ -12,6 +11,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewpager.widget.ViewPager;
 
+import com.example.weatherforecast.App;
 import com.example.weatherforecast.R;
 import com.example.weatherforecast.databinding.ActivityMainBinding;
 import com.example.weatherforecast.features.FragmentPageAdapter;
@@ -21,17 +21,20 @@ import com.example.weatherforecast.features.today.TodayFragment;
 import com.example.weatherforecast.models.Forecast;
 import com.google.android.material.tabs.TabLayout;
 
-public class MainActivity extends AppCompatActivity implements MainContract.View {
-    private MainContract.Presenter presenter;
+import javax.inject.Inject;
 
+public class MainActivity extends AppCompatActivity implements MainContract.View {
     private boolean doubleBackToExitPressedOnce = false;
     private ActivityMainBinding binding;
     private ViewPager pager;
 
+    @Inject
+    MainContract.Presenter presenter;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        presenter = new MainPresenter(this, getPreferences(Context.MODE_PRIVATE));
+        App.getAppComponent().activityComponent().inject(this);
         presenter.setView(this);
 
         initViewBinding();
