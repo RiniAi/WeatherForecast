@@ -1,16 +1,18 @@
 package com.example.weatherforecast.usecases;
 
-import com.example.weatherforecast.features.main.ForecastRepository;
 import com.example.weatherforecast.features.main.Repository;
 import com.example.weatherforecast.models.Forecast;
+
+import javax.inject.Inject;
 
 import io.reactivex.rxjava3.core.Single;
 
 public class RequestForecastUseCase {
-    private Repository repository;
+    @Inject
+    Repository repository;
 
+    @Inject
     public RequestForecastUseCase() {
-        repository = new ForecastRepository();
     }
 
     public Single<Forecast> run(Params params) {
