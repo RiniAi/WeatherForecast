@@ -31,17 +31,13 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        presenter = new MainPresenter(this, this, getPreferences(Context.MODE_PRIVATE));
+        presenter = new MainPresenter(this, getPreferences(Context.MODE_PRIVATE));
+        presenter.setView(this);
 
         initViewBinding();
         initNavigation();
         hideProgressBarAndViewForecast();
         presenter.start();
-    }
-
-    @Override
-    public void setPresenter(MainContract.Presenter presenter) {
-        this.presenter = presenter;
     }
 
     private void initViewBinding() {

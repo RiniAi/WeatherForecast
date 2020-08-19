@@ -30,7 +30,7 @@ import io.reactivex.rxjava3.disposables.CompositeDisposable;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 
-class MainPresenter implements MainContract.Presenter {
+public class MainPresenter implements MainContract.Presenter {
     public static final String STORAGE_LOCATION = "location";
     private int locationRequestCode = 1000;
 
@@ -43,16 +43,18 @@ class MainPresenter implements MainContract.Presenter {
     private SharedPreferences sharedPreferences;
     private RequestForecastUseCase requestForecastUseCase;
 
-    public MainPresenter(Context context, MainContract.View view, SharedPreferences sharedPreferences) {
+    public MainPresenter(Context context, SharedPreferences sharedPreferences) {
         this.context = context;
         this.disposables = new CompositeDisposable();
         this.geocoder = new Geocoder(context, Locale.getDefault());
         this.requestForecastUseCase = new RequestForecastUseCase();
         this.sharedPreferences = sharedPreferences;
         this.fusedLocationClient = LocationServices.getFusedLocationProviderClient(context);
+    }
 
+    @Override
+    public void setView(MainContract.View view) {
         this.view = view;
-        this.view.setPresenter(this);
     }
 
     @Override

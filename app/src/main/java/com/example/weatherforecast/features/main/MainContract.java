@@ -5,7 +5,7 @@ import com.example.weatherforecast.base.BaseView;
 import com.example.weatherforecast.models.Forecast;
 
 public interface MainContract {
-    interface View extends BaseView<Presenter> {
+    interface View extends BaseView {
         void showForecast(Forecast forecast);
 
         void showProgressBar();
@@ -23,7 +23,7 @@ public interface MainContract {
         void showError();
     }
 
-    interface Presenter extends BasePresenter {
+    interface Presenter extends BasePresenter<View> {
         void unsubscribe();
 
         void getForecastViaGps();
