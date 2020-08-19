@@ -73,14 +73,14 @@ public class TodayFragment extends Fragment {
         LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false);
         binding.rvHourlyForecast.setLayoutManager(layoutManager);
         binding.rvHourlyForecast.setAdapter(hourlyAdapter);
-        hourlyAdapter.setContext(getContext());
+        hourlyAdapter.setContext(getActivity());
         hourlyAdapter.setList(forecast.getTodayHourly());
         hourlyAdapter.setOnItemClickListener((hourly) -> viewPager.setCurrentItem(1));
 
         LinearLayoutManager nextLayoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false);
         binding.rvDailyForecast.setLayoutManager(nextLayoutManager);
         binding.rvDailyForecast.setAdapter(dailyAdapter);
-        hourlyAdapter.setContext(getContext());
+        dailyAdapter.setContext(getActivity());
         dailyAdapter.setList(forecast.getTodayDaily());
         dailyAdapter.setOnItemClickListener((daily) -> viewPager.setCurrentItem(2));
     }
