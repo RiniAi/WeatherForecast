@@ -20,4 +20,5 @@
     <string name="main_activity_permission_denied">Permission denied!</string>
     <string name="main_activity_check_gps_enabled">Check if GPS is enabled!</string>
     <string name="main_activity_check_internet_connection">Check your Internet connection!</string>
+    <string name="main_activity_nothing_not_found">Nothing was found for your search!</string>
 </resources>

@@ -10,19 +10,23 @@ public interface MainContract {
 
         void showProgressBar();
 
+        void showFragmentContainer();
+
+        void showEmptyView();
+
+        void showError();
+
         void setCityNameForToolbarTitle(String city, String area);
 
         void setDefaultToolbarTitle();
-
-        void hideProgressBarAndViewForecast();
 
         void checkGpsEnabled();
 
         void checkInternetConnection();
 
-        void permissionDenied();
+        void nothingNotFound();
 
-        void showError();
+        void permissionDenied();
     }
 
     interface Presenter extends BasePresenter<View> {

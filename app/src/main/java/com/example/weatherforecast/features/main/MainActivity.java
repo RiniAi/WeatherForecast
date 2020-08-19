@@ -39,7 +39,7 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
 
         initViewBinding();
         initNavigation();
-        hideProgressBarAndViewForecast();
+        showEmptyView();
         presenter.start();
     }
 
@@ -105,7 +105,6 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
             public boolean onQueryTextSubmit(String s) {
                 if (presenter.isInternetAvailable()) {
                     showProgressBar();
-                    setDefaultToolbarTitle();
                     presenter.getForecastViaQuery(searchView.getQuery().toString());
                 } else {
                     checkInternetConnection();
@@ -130,8 +129,7 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
 
     @Override
     public void showForecast(Forecast forecast) {
-        binding.fragmentContainer.setVisibility(View.VISIBLE);
-        binding.progressBar.setVisibility(View.GONE);
+        showFragmentContainer();
         FragmentPageAdapter adapter = new FragmentPageAdapter(getSupportFragmentManager());
         adapter.addFragment(TodayFragment.newInstance(forecast), getString(R.string.main_activity_today_fragment));
         adapter.addFragment(HourlyFragment.newInstance(forecast.getHourly()), getString(R.string.main_activity_hourly_fragment));
@@ -147,6 +145,20 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
     }
 
     @Override
+    public void showFragmentContainer() {
+        binding.fragmentContainer.setVisibility(View.VISIBLE);
+        binding.emptyView.setVisibility(View.GONE);
+        binding.progressBar.setVisibility(View.GONE);
+    }
+
+    @Override
+    public void showEmptyView() {
+        binding.fragmentContainer.setVisibility(View.GONE);
+        binding.emptyView.setVisibility(View.VISIBLE);
+        binding.progressBar.setVisibility(View.GONE);
+    }
+
+    @Override
     public void setCityNameForToolbarTitle(String city, String area) {
         binding.toolbarMainActivity.toolbar.setTitle(city + " " + area);
     }
@@ -154,15 +166,6 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
     @Override
     public void setDefaultToolbarTitle() {
         binding.toolbarMainActivity.toolbar.setTitle(R.string.app_name);
-    }
-
-    @Override
-    public void hideProgressBarAndViewForecast() {
-        binding.progressBar.setVisibility(View.GONE);
-    }
-
-    private void showEmptyView() {
-        binding.emptyView.setVisibility(View.VISIBLE);
     }
 
     @Override
@@ -176,15 +179,17 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
     }
 
     @Override
+    public void nothingNotFound() {
+        Toast.makeText(this, R.string.main_activity_nothing_not_found, Toast.LENGTH_LONG).show();
+    }
+
+    @Override
     public void permissionDenied() {
         Toast.makeText(this, R.string.main_activity_permission_denied, Toast.LENGTH_LONG).show();
-        hideProgressBarAndViewForecast();
     }
 
     @Override
     public void showError() {
         Toast.makeText(this, R.string.main_activity_try_later, Toast.LENGTH_LONG).show();
-        hideProgressBarAndViewForecast();
-        showEmptyView();
     }
 }

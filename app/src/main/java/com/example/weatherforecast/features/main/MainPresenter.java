@@ -42,6 +42,7 @@ public class MainPresenter implements MainContract.Presenter {
     private CompositeDisposable disposables;
     private MainContract.View view;
     private Geocoder geocoder;
+    private String locationName;
 
     @Inject
     Context context;
@@ -68,10 +69,10 @@ public class MainPresenter implements MainContract.Presenter {
     @Override
     public void start() {
         if (isInternetAvailable()) {
-            String location = sharedPreferences.getString(STORAGE_LOCATION, "");
-            if (!location.equals("")) {
+            locationName = sharedPreferences.getString(STORAGE_LOCATION, "");
+            if (!locationName.equals("")) {
                 view.showProgressBar();
-                getForecastViaQuery(location);
+                getForecastViaQuery(locationName);
             }
         } else {
             view.checkInternetConnection();
@@ -118,10 +119,19 @@ public class MainPresenter implements MainContract.Presenter {
                     Log.i("FusedLocationClient", "Permission is obtained");
                 } else {
                     view.permissionDenied();
+                    showView();
                     Log.e("FusedLocationClient", "Permission denied");
                 }
                 break;
             }
+        }
+    }
+
+    private void showView(){
+        if (!locationName.equals("")) {
+            view.showEmptyView();
+        } else {
+            view.showFragmentContainer();
         }
     }
 
@@ -148,7 +158,7 @@ public class MainPresenter implements MainContract.Presenter {
             }
             // Case when there was no last location and it also failed to update
             else {
-                view.hideProgressBarAndViewForecast();
+                view.showEmptyView();
                 view.setDefaultToolbarTitle();
                 view.checkGpsEnabled();
                 Log.e("FusedLocationClient", "Location is null");
@@ -194,6 +204,7 @@ public class MainPresenter implements MainContract.Presenter {
                         // onError
                         throwable -> {
                             view.showError();
+                            showView();
                             Log.e("Response", throwable.getMessage());
                         }
                 );
@@ -207,10 +218,20 @@ public class MainPresenter implements MainContract.Presenter {
             Log.i("Geolocation", "Location" + " " + location + " " + location.size());
         } catch (IOException e) {
             view.showError();
+            showView();
             Log.e("Geolocation", "Impossible to connect to GeoCoder", e);
         } finally {
             if (location.size() != 0) {
-                view.setCityNameForToolbarTitle(location.get(0).getLocality(), location.get(0).getAdminArea());
+                String area = location.get(0).getAdminArea();
+                if (area == null) {
+                    area = location.get(0).getCountryName();
+                }
+                String city = location.get(0).getLocality();
+                if (city == null) {
+                    city = area;
+                    area = "";
+                }
+                view.setCityNameForToolbarTitle(city, area);
                 saveLocation(location);
                 Log.i("Geolocation", "Location" + location.toString());
             }
@@ -231,9 +252,13 @@ public class MainPresenter implements MainContract.Presenter {
             Log.i("Geolocation", "Location" + " " + location + " " + location.size());
         } catch (IOException e) {
             view.showError();
+            showView();
             Log.e("Geolocation", "Impossible to connect to GeoCoder", e);
         } finally {
-            if (location.size() != 0) {
+            if (location.size() == 0) {
+                view.nothingNotFound();
+                showView();
+            } else {
                 double lat = location.get(0).getLatitude();
                 double lon = location.get(0).getLongitude();
                 loadForecast(lat, lon);
