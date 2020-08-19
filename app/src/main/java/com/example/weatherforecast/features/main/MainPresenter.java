@@ -25,6 +25,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
+import javax.inject.Inject;
+
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 import io.reactivex.rxjava3.disposables.CompositeDisposable;
 import io.reactivex.rxjava3.disposables.Disposable;
@@ -36,19 +38,23 @@ public class MainPresenter implements MainContract.Presenter {
 
     private FusedLocationProviderClient fusedLocationClient;
     private CompositeDisposable disposables;
+    private MainContract.View view;
     private Geocoder geocoder;
 
-    private Context context;
-    private MainContract.View view;
-    private SharedPreferences sharedPreferences;
-    private RequestForecastUseCase requestForecastUseCase;
+    @Inject
+    Context context;
+    @Inject
+    SharedPreferences sharedPreferences;
+    @Inject
+    RequestForecastUseCase requestForecastUseCase;
 
-    public MainPresenter(Context context, SharedPreferences sharedPreferences) {
+    @Inject
+    public MainPresenter(Context context, SharedPreferences sharedPreferences, RequestForecastUseCase requestForecastUseCase) {
         this.context = context;
+        this.sharedPreferences = sharedPreferences;
         this.disposables = new CompositeDisposable();
         this.geocoder = new Geocoder(context, Locale.getDefault());
-        this.requestForecastUseCase = new RequestForecastUseCase();
-        this.sharedPreferences = sharedPreferences;
+        this.requestForecastUseCase = requestForecastUseCase;
         this.fusedLocationClient = LocationServices.getFusedLocationProviderClient(context);
     }
 
