@@ -76,7 +76,8 @@
                     android:layout_width="@dimen/list_daily_item_size_image"
                     android:layout_height="@dimen/list_daily_item_size_image"
                     android:layout_gravity="center"
-                    android:src="@drawable/d_clear_sky" />
+                    android:src="@drawable/d_clear_sky"
+                    tools:ignore="ContentDescription"/>
             </LinearLayout>
 
             <LinearLayout

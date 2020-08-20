@@ -64,7 +64,8 @@
                     android:id="@+id/iv_image_weather"
                     android:layout_width="@dimen/fragment_today_size_of_main_image"
                     android:layout_height="@dimen/fragment_today_size_of_main_image"
-                    android:src="@drawable/d_clear_sky" />
+                    android:src="@drawable/d_clear_sky"
+                    tools:ignore="ContentDescription"/>
             </LinearLayout>
 
             <LinearLayout

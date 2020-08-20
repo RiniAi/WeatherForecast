@@ -18,7 +18,8 @@
          android:layout_width="@dimen/list_today_daily_size_main_image"
          android:layout_height="@dimen/list_today_daily_size_main_image"
          android:gravity="center"
-         android:src="@drawable/d_clear_sky"/>
+         android:src="@drawable/d_clear_sky"
+         tools:ignore="ContentDescription"/>
 
     <TextView
         android:id="@+id/tv_temperature"
