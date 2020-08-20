@@ -93,7 +93,7 @@
                                 android:layout_height="wrap_content"
                                 android:padding="@dimen/margin_padding_8dp"
                                 android:layout_gravity="center"
-                                android:text="@string/humidity" />
+                                android:text="@string/fragment_today_humidity" />
 
                             <TextView
                                 android:id="@+id/tv_humidity"
@@ -121,7 +121,7 @@
                                 android:layout_height="wrap_content"
                                 android:padding="@dimen/margin_padding_8dp"
                                 android:layout_gravity="center"
-                                android:text="@string/clouds" />
+                                android:text="@string/fragment_today_clouds" />
 
                             <TextView
                                 android:id="@+id/tv_clouds"
@@ -149,7 +149,7 @@
                                 android:layout_height="wrap_content"
                                 android:padding="@dimen/margin_padding_8dp"
                                 android:layout_gravity="center"
-                                android:text="@string/pressure" />
+                                android:text="@string/fragment_today_pressure" />
 
                             <TextView
                                 android:id="@+id/tv_pressure"
