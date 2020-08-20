@@ -30,10 +30,16 @@ public interface MainContract {
 
         void nothingNotFound();
 
+        void updateMessage();
+
+        void refreshError();
+
         void permissionDenied();
     }
 
     interface Presenter extends BasePresenter<View> {
+        void swipeRefresh();
+
         void unsubscribe();
 
         boolean isGpsAvailable();

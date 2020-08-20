@@ -16,6 +16,7 @@ import com.example.weatherforecast.models.Hourly;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 
 import javax.inject.Inject;
 
@@ -41,7 +42,7 @@ public class HourlyAdapter extends BaseAdapter<Hourly, HourlyAdapter.HourlyViewH
         }
         holder.temperature.setText(getContext().getString(R.string.hourly_temperature, (int) hourly.getTemp()));
         holder.time.setText(new SimpleDateFormat("HH:mm").format(new Date(hourly.getDate() * 1000L)));
-        holder.date.setText(new SimpleDateFormat("dd, E").format(new Date(hourly.getDate() * 1000L)));
+        holder.date.setText(new SimpleDateFormat("dd, E", Locale.ENGLISH).format(new Date(hourly.getDate() * 1000L)));
         holder.description.setText(hourly.getWeather().get(0).getDescription());
         holder.wind.setText(getContext().getString(R.string.hourly_wind_speed, (int) hourly.getWindSpeed()));
         holder.clouds.setText(getContext().getString(R.string.clouds, (int) hourly.getClouds()));

@@ -16,6 +16,7 @@ import com.example.weatherforecast.models.Daily;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 
 import javax.inject.Inject;
 
@@ -38,7 +39,7 @@ public class DailyAdapter extends BaseAdapter<Daily, DailyAdapter.DailyViewHolde
         if (daily == null) {
             return;
         }
-        holder.date.setText(new SimpleDateFormat("E dd/MM/yyyy").format(new Date(daily.getDate() * 1000L)));
+        holder.date.setText(new SimpleDateFormat("E dd/MM/yyyy", Locale.ENGLISH).format(new Date(daily.getDate() * 1000L)));
         holder.temperature.setText(getContext().getString(R.string.temperature, (int) daily.getTemp().getMax()));
         holder.description.setText(daily.getWeather().get(0).getDescription());
         holder.wind.setText(getContext().getString(R.string.wind_speed, (int) daily.getWindSpeed()));

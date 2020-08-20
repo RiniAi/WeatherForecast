@@ -59,10 +59,9 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
     private void initSwipeRefresh() {
         binding.swipeRefresh.setOnRefreshListener(() -> new Handler().postDelayed(() -> {
             pageItem = pager.getCurrentItem();
-            presenter.start();
+            presenter.swipeRefresh();
             binding.swipeRefresh.setRefreshing(false);
-        }, 4000));
-
+        }, 1500));
     }
 
     @Override
@@ -120,6 +119,7 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
                 } else {
                     checkInternetConnection();
                 }
+                searchView.setQuery("", false);
                 menu.findItem(R.id.search).collapseActionView(); // Collapse the action view associated with this menu item
                 return true;
             }
@@ -156,8 +156,6 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
 
     @Override
     public void showProgressBar() {
-        binding.fragmentContainer.setVisibility(View.GONE);
-        binding.emptyView.setVisibility(View.GONE);
         binding.progressBar.setVisibility(View.VISIBLE);
     }
 
@@ -203,6 +201,16 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
     @Override
     public void nothingNotFound() {
         Toast.makeText(this, R.string.main_activity_nothing_not_found, Toast.LENGTH_LONG).show();
+    }
+
+    @Override
+    public void updateMessage() {
+        Toast.makeText(this, R.string.main_activity_date_update, Toast.LENGTH_LONG).show();
+    }
+
+    @Override
+    public void refreshError() {
+        Toast.makeText(this, R.string.main_activity_refresh_start, Toast.LENGTH_LONG).show();
     }
 
     @Override

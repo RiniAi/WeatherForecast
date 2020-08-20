@@ -17,6 +17,7 @@ import com.example.weatherforecast.models.Daily;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 
 import javax.inject.Inject;
 
@@ -45,7 +46,7 @@ public class TodayDailyAdapter extends BaseAdapter<Daily, TodayDailyAdapter.Hour
         if (daily == null) {
             return;
         }
-        holder.date.setText(new SimpleDateFormat("E").format(new Date(daily.getDate() * 1000L)));
+        holder.date.setText(new SimpleDateFormat("E", Locale.ENGLISH).format(new Date(daily.getDate() * 1000L)));
         holder.temperature.setText(getContext().getString(R.string.temperature, (int) daily.getTemp().getMax()));
         selectImage(daily, holder);
     }

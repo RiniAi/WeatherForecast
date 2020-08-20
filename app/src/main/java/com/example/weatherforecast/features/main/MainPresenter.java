@@ -38,6 +38,7 @@ public class MainPresenter implements MainContract.Presenter {
     public static final String STORAGE_LOCATION = "location";
     private int locationRequestCode = 1000;
     private String locationName;
+    private int counter = 0;
 
     private FusedLocationProviderClient fusedLocationClient;
     private CompositeDisposable disposables;
@@ -70,7 +71,6 @@ public class MainPresenter implements MainContract.Presenter {
     public void start() {
         locationName = sharedPreferences.getString(STORAGE_LOCATION, "");
         Log.i("FusedLocationClient", locationName);
-
         if (isInternetAvailable() & isGpsAvailable()) {
             getForecastViaGps();
         } else if (!isInternetAvailable()) {
@@ -81,6 +81,16 @@ public class MainPresenter implements MainContract.Presenter {
         } else if (!isGpsAvailable() & locationName.isEmpty()) {
             view.checkGpsEnabledRoQuery();
             view.showEmptyView();
+        }
+    }
+
+    @Override
+    public void swipeRefresh() {
+        locationName = sharedPreferences.getString(STORAGE_LOCATION, "");
+        if (isInternetAvailable() && !locationName.isEmpty()) {
+            getForecastViaQuery(locationName);
+        } else {
+            view.refreshError();
         }
     }
 
@@ -104,6 +114,7 @@ public class MainPresenter implements MainContract.Presenter {
 
     @Override
     public void getForecastViaGps() {
+        locationName = sharedPreferences.getString(STORAGE_LOCATION, "");
         if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
                 ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions((Activity) view, new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, locationRequestCode);
@@ -139,7 +150,7 @@ public class MainPresenter implements MainContract.Presenter {
         } else {
             getForecastViaQuery(locationName);
             view.permissionDeniedLastQuery();
-            Log.e("FusedLocationClient", "Permission denied. Search was performed for the last query");
+            Log.e("FusedLocationClient", "Permission denied. Search was performed for the last query " + locationName);
         }
     }
 
@@ -204,6 +215,7 @@ public class MainPresenter implements MainContract.Presenter {
                 .subscribe(
                         // onNext
                         forecast -> {
+                            updateMessage();
                             determineCityByCoordinates(latitude, longitude);
                             view.showForecast(forecast);
                         },
@@ -214,6 +226,14 @@ public class MainPresenter implements MainContract.Presenter {
                         }
                 );
         disposables.add(subscription);
+    }
+
+    private void updateMessage() {
+        counter++;
+        Log.i("FusedLocationClient", "UPDATE" + counter);
+        if (counter > 1) {
+            view.updateMessage();
+        }
     }
 
     private void determineCityByCoordinates(double latitude, double longitude) {

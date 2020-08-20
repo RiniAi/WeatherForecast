@@ -14,25 +14,24 @@
             android:orientation="horizontal" >
 
             <LinearLayout
-                android:layout_width="wrap_content"
+                android:layout_width="@dimen/hourly_item_ll_width"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:layout_marginEnd="@dimen/margin_padding_16dp"
-                android:gravity="center">
+                android:layout_marginEnd="@dimen/margin_padding_8dp"
+                android:layout_gravity="center">
 
                 <TextView
                     android:id="@+id/tv_time"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:gravity="center"
-                    android:padding="@dimen/margin_padding_8dp"
+                    android:layout_gravity="center"
                     android:text="00:00" />
 
                 <TextView
                     android:id="@+id/tv_date"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:gravity="center"
+                    android:layout_gravity="center"
                     android:padding="@dimen/margin_padding_8dp"
                     android:text="juli 1" />
             </LinearLayout>
