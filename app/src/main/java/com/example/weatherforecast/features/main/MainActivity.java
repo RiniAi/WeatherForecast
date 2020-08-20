@@ -2,6 +2,7 @@ package com.example.weatherforecast.features.main;
 
 import android.os.Bundle;
 import android.os.Handler;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.View;
 import android.widget.SearchView;
@@ -77,7 +78,7 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
         } else if (doubleBackToExitPressedOnce) {
             finish();
         } else {
-            Toast.makeText(MainActivity.this, R.string.main_activity_click_again, Toast.LENGTH_LONG).show();
+            clickAgain();
             doubleBackToExitPressedOnce = true;
             new Handler().postDelayed(() -> doubleBackToExitPressedOnce = false, 2000);
         }
@@ -183,48 +184,67 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
         binding.toolbarMainActivity.toolbar.setTitle(city + " " + area);
     }
 
+    private void initViewToast(Toast toast) {
+        toast.setGravity(Gravity.CENTER|Gravity.BOTTOM, 0, 40);
+        toast.show();
+    }
+
+    private void clickAgain() {
+        Toast toast = Toast.makeText(this, R.string.main_activity_click_again, Toast.LENGTH_LONG);
+        initViewToast(toast);
+    }
+
     @Override
     public void checkGpsEnabled() {
-        Toast.makeText(MainActivity.this, R.string.main_activity_check_gps_enabled, Toast.LENGTH_LONG).show();
+        Toast toast = Toast.makeText(this, R.string.main_activity_check_gps_enabled, Toast.LENGTH_LONG);
+        initViewToast(toast);
     }
 
     @Override
     public void checkGpsEnabledRoQuery() {
-        Toast.makeText(MainActivity.this, R.string.main_activity_check_gps_enabled_or_query, Toast.LENGTH_LONG).show();
+        Toast toast = Toast.makeText(this, R.string.main_activity_check_gps_enabled_or_query, Toast.LENGTH_LONG);
+        initViewToast(toast);
     }
 
     @Override
     public void checkInternetConnection() {
-        Toast.makeText(this, R.string.main_activity_check_internet_connection, Toast.LENGTH_LONG).show();
+        Toast toast = Toast.makeText(this, R.string.main_activity_check_internet_connection, Toast.LENGTH_LONG);
+        initViewToast(toast);
     }
 
     @Override
     public void nothingNotFound() {
-        Toast.makeText(this, R.string.main_activity_nothing_not_found, Toast.LENGTH_LONG).show();
+        Toast toast = Toast.makeText(this, R.string.main_activity_nothing_not_found, Toast.LENGTH_LONG);
+        initViewToast(toast);
     }
 
     @Override
     public void updateMessage() {
-        Toast.makeText(this, R.string.main_activity_date_update, Toast.LENGTH_LONG).show();
+        Toast toast = Toast.makeText(this, R.string.main_activity_date_update, Toast.LENGTH_LONG);
+        initViewToast(toast);
     }
 
     @Override
     public void refreshError() {
-        Toast.makeText(this, R.string.main_activity_refresh_start, Toast.LENGTH_LONG).show();
+        Toast toast = Toast.makeText(this, R.string.main_activity_refresh_start, Toast.LENGTH_LONG);
+        initViewToast(toast);
     }
 
     @Override
     public void permissionDenied() {
-        Toast.makeText(this, R.string.main_activity_permission_denied, Toast.LENGTH_LONG).show();
+        Toast toast = Toast.makeText(this, R.string.main_activity_permission_denied, Toast.LENGTH_LONG);
+        initViewToast(toast);
     }
 
     @Override
     public void permissionDeniedLastQuery() {
-        Toast.makeText(MainActivity.this, R.string.main_activity_permission_denied_last_query, Toast.LENGTH_LONG).show();
+        Toast toast = Toast.makeText(this, R.string.main_activity_permission_denied_last_query, Toast.LENGTH_LONG);
+        initViewToast(toast);
     }
 
     @Override
     public void showError() {
-        Toast.makeText(this, R.string.main_activity_try_later, Toast.LENGTH_LONG).show();
+        Toast toast = Toast.makeText(this, R.string.main_activity_try_later, Toast.LENGTH_LONG);
+        initViewToast(toast);
     }
 }
