@@ -52,7 +52,7 @@ public class TodayDailyAdapter extends BaseAdapter<Daily, TodayDailyAdapter.Hour
     }
 
     private void selectImage(Daily daily, HourlyForecastViewHolder holder) {
-        int time = Integer.parseInt(new SimpleDateFormat("HH").format(new Date(daily.getDate() * 1000L)));
+        int time = Integer.parseInt(new SimpleDateFormat("HH", Locale.ENGLISH).format(new Date(daily.getDate() * 1000L)));
         switch (daily.getWeather().get(0).getId()) {
             case 200:
             case 201:

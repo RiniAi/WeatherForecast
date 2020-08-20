@@ -41,7 +41,7 @@ public class HourlyAdapter extends BaseAdapter<Hourly, HourlyAdapter.HourlyViewH
             return;
         }
         holder.temperature.setText(getContext().getString(R.string.hourly_temperature, (int) hourly.getTemp()));
-        holder.time.setText(new SimpleDateFormat("HH:mm").format(new Date(hourly.getDate() * 1000L)));
+        holder.time.setText(new SimpleDateFormat("HH:mm", Locale.ENGLISH).format(new Date(hourly.getDate() * 1000L)));
         holder.date.setText(new SimpleDateFormat("dd, E", Locale.ENGLISH).format(new Date(hourly.getDate() * 1000L)));
         holder.description.setText(hourly.getWeather().get(0).getDescription());
         holder.wind.setText(getContext().getString(R.string.hourly_wind_speed, (int) hourly.getWindSpeed()));
@@ -55,7 +55,7 @@ public class HourlyAdapter extends BaseAdapter<Hourly, HourlyAdapter.HourlyViewH
     }
 
     private void selectImage(Hourly hourly, HourlyViewHolder holder) {
-        int time = Integer.parseInt(new SimpleDateFormat("HH").format(new Date(hourly.getDate() * 1000L)));
+        int time = Integer.parseInt(new SimpleDateFormat("HH", Locale.ENGLISH).format(new Date(hourly.getDate() * 1000L)));
         switch (hourly.getWeather().get(0).getId()) {
             case 200:
             case 201:
