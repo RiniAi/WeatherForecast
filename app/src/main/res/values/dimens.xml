@@ -14,7 +14,7 @@
     <dimen name="text_size_medium">20sp</dimen>
     <dimen name="text_size_title">48sp</dimen>
 
-    <dimen name="main_activity_size_of_main_image">192dp</dimen>
+    <dimen name="main_activity_tv_layout_margin_top">96dp</dimen>
 
     <dimen name="hourly_item_ll_width">64dp</dimen>
 

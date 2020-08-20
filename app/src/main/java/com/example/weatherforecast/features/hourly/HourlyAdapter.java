@@ -8,6 +8,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 
 import com.example.weatherforecast.R;
 import com.example.weatherforecast.base.BaseAdapter;
@@ -47,9 +48,9 @@ public class HourlyAdapter extends BaseAdapter<Hourly, HourlyAdapter.HourlyViewH
         holder.wind.setText(getContext().getString(R.string.hourly_wind_speed, (int) hourly.getWindSpeed()));
         holder.clouds.setText(getContext().getString(R.string.clouds, (int) hourly.getClouds()));
         if (hourly.getClouds() < 50) {
-            holder.cloudsImage.setImageResource(R.drawable.not_drop);
+            holder.clouds.setCompoundDrawablesWithIntrinsicBounds(ContextCompat.getDrawable(getContext(), R.drawable.not_drop), null, null, null);
         } else {
-            holder.cloudsImage.setImageResource(R.drawable.drop);
+            holder.clouds.setCompoundDrawablesWithIntrinsicBounds(ContextCompat.getDrawable(getContext(), R.drawable.drop), null, null, null);
         }
         selectImage(hourly, holder);
     }
@@ -153,7 +154,6 @@ public class HourlyAdapter extends BaseAdapter<Hourly, HourlyAdapter.HourlyViewH
         TextView wind;
         TextView temperature;
         TextView clouds;
-        ImageView cloudsImage;
 
         HourlyViewHolder(@NonNull View view) {
             super(view);
@@ -164,7 +164,6 @@ public class HourlyAdapter extends BaseAdapter<Hourly, HourlyAdapter.HourlyViewH
             wind = view.findViewById(R.id.tv_wind_speed);
             temperature = view.findViewById(R.id.tv_temperature);
             clouds = view.findViewById(R.id.tv_clouds);
-            cloudsImage = view.findViewById(R.id.iv_clouds);
         }
     }
 }
