@@ -1,6 +1,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
+    xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical">
 
     <LinearLayout
@@ -16,7 +17,7 @@
             android:layout_height="wrap_content"
             android:padding="@dimen/margin_padding_8dp"
             android:gravity="center"
-            android:text="00:00"/>
+            tools:text="00:00"/>
 
         <ImageView
             android:id="@+id/iv_image_weather"
@@ -31,6 +32,6 @@
             android:layout_height="wrap_content"
             android:padding="@dimen/margin_padding_8dp"
             android:gravity="center"
-            android:text=" 00°"/>
+            tools:text=" 00°"/>
     </LinearLayout>
 </LinearLayout>

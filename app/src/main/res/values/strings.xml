@@ -4,16 +4,24 @@
     <string name="search_was_not_performed">Search was not performed…</string>
     <string name="temperature">%1$d°</string>
     <string name="hourly_temperature">about %1$d°</string>
-    <string name="temperature_feels_like">fells like %1$d°</string>
+    <string name="temperature_feels_like">feels like %1$d°</string>
     <string name="wind_speed">wind about %1$d KM/H</string>
     <string name="hourly_wind_speed">%1$d KM/H</string>
     <string name="clouds">%1$d%%</string>
     <string name="humidity">%1$d%%</string>
     <string name="pressure">%1$d hPa</string>
+    <string name="more">MORE >></string>
 
     <string name="main_activity_today_fragment">Today</string>
     <string name="main_activity_hourly_fragment">Hourly</string>
     <string name="main_activity_daily_fragment">Daily</string>
+
+    <string name="fragment_today_humidity">Humidity</string>
+    <string name="fragment_today_clouds">Clouds</string>
+    <string name="fragment_today_pressure">Pressure</string>
+    <string name="fragment_today_sunrise">Sunrise</string>
+    <string name="fragment_today_sunset">Sunset</string>
+    <string name="fragment_today_uv_index">UV index</string>
 
     <string name="main_activity_try_later">Something went wrong…Try later!</string>
     <string name="main_activity_click_again">Click again to exit the app</string>

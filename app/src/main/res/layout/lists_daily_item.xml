@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
@@ -22,7 +22,7 @@
                 android:layout_marginEnd="@dimen/margin_padding_16dp"
                 android:layout_marginTop="@dimen/margin_padding_16dp"
                 android:textSize="@dimen/text_size_medium"
-                android:text="Juli 24" />
+                tools:text="Juli 24" />
 
             <View
                 android:layout_width="match_parent"
@@ -51,24 +51,24 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="@dimen/margin_padding_8dp"
-                        android:text="00°/00°"
-                        android:textSize="@dimen/text_size_medium" />
+                        android:textSize="@dimen/text_size_medium"
+                        tools:text="00°" />
 
                     <TextView
                         android:id="@+id/tv_description_weather"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="@dimen/margin_padding_8dp"
-                        android:text="Sunny"
                         android:textSize="@dimen/text_size_normal"
-                        android:textStyle="bold" />
+                        android:textStyle="bold"
+                        tools:text="sunny" />
 
                     <TextView
                         android:id="@+id/tv_wind_speed"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="@dimen/margin_padding_8dp"
-                        android:text="Wind 00 KM/H ESE" />
+                        tools:text="wind 00 KM/H" />
                 </LinearLayout>
 
                 <ImageView
@@ -97,7 +97,7 @@
                         android:layout_height="wrap_content"
                         android:padding="@dimen/margin_padding_8dp"
                         android:layout_gravity="center"
-                        android:text="Humidity" />
+                        android:text="@string/humidity" />
 
                     <TextView
                         android:id="@+id/tv_humidity"
@@ -105,8 +105,8 @@
                         android:layout_height="wrap_content"
                         android:padding="@dimen/margin_padding_8dp"
                         android:gravity="center"
-                        android:text="0%"
-                        android:textSize="@dimen/text_size_normal" />
+                        android:textSize="@dimen/text_size_normal"
+                        tools:text="0%" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -120,7 +120,7 @@
                         android:layout_height="wrap_content"
                         android:padding="@dimen/margin_padding_8dp"
                         android:layout_gravity="center"
-                        android:text="Clouds"/>
+                        android:text="@string/clouds"/>
 
                     <TextView
                         android:id="@+id/tv_clouds"
@@ -128,8 +128,8 @@
                         android:layout_height="wrap_content"
                         android:padding="@dimen/margin_padding_8dp"
                         android:gravity="center"
-                        android:text="0%"
-                        android:textSize="@dimen/text_size_normal" />
+                        android:textSize="@dimen/text_size_normal"
+                        tools:text="0%" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -143,7 +143,7 @@
                         android:layout_height="wrap_content"
                         android:padding="@dimen/margin_padding_8dp"
                         android:layout_gravity="center"
-                        android:text="Pressure" />
+                        android:text="@string/pressure" />
 
                     <TextView
                         android:id="@+id/tv_pressure"
@@ -151,8 +151,8 @@
                         android:layout_height="wrap_content"
                         android:padding="@dimen/margin_padding_8dp"
                         android:gravity="center"
-                        android:text="0,000 Mb"
-                        android:textSize="@dimen/text_size_normal" />
+                        android:textSize="@dimen/text_size_normal"
+                        tools:text="0,000 Mb" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -166,7 +166,7 @@
                         android:layout_height="wrap_content"
                         android:padding="@dimen/margin_padding_8dp"
                         android:layout_gravity="center"
-                        android:text="Uvi" />
+                        android:text="@string/fragment_today_uv_index" />
 
                     <TextView
                         android:id="@+id/tv_uvi"
@@ -174,8 +174,8 @@
                         android:layout_height="wrap_content"
                         android:padding="@dimen/margin_padding_8dp"
                         android:gravity="center"
-                        android:text="00.0"
-                        android:textSize="@dimen/text_size_normal" />
+                        android:textSize="@dimen/text_size_normal"
+                        tools:text="00.0" />
                 </LinearLayout>
             </LinearLayout>
         </LinearLayout>
