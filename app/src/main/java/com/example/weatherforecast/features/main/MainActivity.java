@@ -184,67 +184,76 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
         binding.toolbarMainActivity.toolbar.setTitle(city + " " + area);
     }
 
-    private void initViewToast(Toast toast) {
+    private void toastSetGravity(Toast toast) {
         toast.setGravity(Gravity.CENTER|Gravity.BOTTOM, 0, 40);
-        toast.show();
     }
 
     private void clickAgain() {
         Toast toast = Toast.makeText(this, R.string.main_activity_click_again, Toast.LENGTH_LONG);
-        initViewToast(toast);
+        toastSetGravity(toast);
+        toast.show();
     }
 
     @Override
     public void checkGpsEnabled() {
         Toast toast = Toast.makeText(this, R.string.main_activity_check_gps_enabled, Toast.LENGTH_LONG);
-        initViewToast(toast);
+        toastSetGravity(toast);
+        toast.show();
     }
 
     @Override
     public void checkGpsEnabledRoQuery() {
         Toast toast = Toast.makeText(this, R.string.main_activity_check_gps_enabled_or_query, Toast.LENGTH_LONG);
-        initViewToast(toast);
+        toastSetGravity(toast);
+        toast.show();
     }
 
     @Override
     public void checkInternetConnection() {
         Toast toast = Toast.makeText(this, R.string.main_activity_check_internet_connection, Toast.LENGTH_LONG);
-        initViewToast(toast);
+        toastSetGravity(toast);
+        toast.show();
     }
 
     @Override
     public void nothingNotFound() {
         Toast toast = Toast.makeText(this, R.string.main_activity_nothing_not_found, Toast.LENGTH_LONG);
-        initViewToast(toast);
+        toastSetGravity(toast);
+        toast.show();
     }
 
     @Override
     public void updateMessage() {
         Toast toast = Toast.makeText(this, R.string.main_activity_date_update, Toast.LENGTH_LONG);
-        initViewToast(toast);
+        toastSetGravity(toast);
+        toast.show();
     }
 
     @Override
     public void refreshError() {
         Toast toast = Toast.makeText(this, R.string.main_activity_refresh_start, Toast.LENGTH_LONG);
-        initViewToast(toast);
+        toastSetGravity(toast);
+        toast.show();
     }
 
     @Override
     public void permissionDenied() {
         Toast toast = Toast.makeText(this, R.string.main_activity_permission_denied, Toast.LENGTH_LONG);
-        initViewToast(toast);
+        toastSetGravity(toast);
+        toast.show();
     }
 
     @Override
     public void permissionDeniedLastQuery() {
         Toast toast = Toast.makeText(this, R.string.main_activity_permission_denied_last_query, Toast.LENGTH_LONG);
-        initViewToast(toast);
+        toastSetGravity(toast);
+        toast.show();
     }
 
     @Override
     public void showError() {
         Toast toast = Toast.makeText(this, R.string.main_activity_try_later, Toast.LENGTH_LONG);
-        initViewToast(toast);
+        toastSetGravity(toast);
+        toast.show();
     }
 }

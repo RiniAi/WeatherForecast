@@ -19,6 +19,7 @@ import com.example.weatherforecast.models.Forecast;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 
 import javax.inject.Inject;
 
@@ -65,8 +66,8 @@ public class TodayFragment extends Fragment {
         binding.tvClouds.setText(getString(R.string.clouds, current.getClouds()));
         binding.tvHumidity.setText(getString(R.string.humidity, current.getHumidity()));
         binding.tvPressure.setText(getString(R.string.pressure, current.getPressure()));
-        binding.tvSunrise.setText(new SimpleDateFormat("HH:mm").format(new Date(current.getSunrise() * 1000L)));
-        binding.tvSunset.setText(new SimpleDateFormat("HH:mm").format(new Date(current.getSunset() * 1000L)));
+        binding.tvSunrise.setText(new SimpleDateFormat("HH:mm", Locale.ENGLISH).format(new Date(current.getSunrise() * 1000L)));
+        binding.tvSunset.setText(new SimpleDateFormat("HH:mm", Locale.ENGLISH).format(new Date(current.getSunset() * 1000L)));
         binding.tvUvi.setText(String.valueOf(current.getUvi()));
         selectImage(current);
 
@@ -86,7 +87,7 @@ public class TodayFragment extends Fragment {
     }
 
     private void selectImage(Current current) {
-        int time = Integer.parseInt(new SimpleDateFormat("HH").format(new Date(current.getDate() * 1000L)));
+        int time = Integer.parseInt(new SimpleDateFormat("HH", Locale.ENGLISH).format(new Date(current.getDate() * 1000L)));
         switch (current.getWeather().get(0).getId()) {
             case 200:
             case 201:

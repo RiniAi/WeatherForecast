@@ -5,13 +5,13 @@
     <item
         android:id="@+id/gps"
         android:icon="@android:drawable/ic_menu_compass"
-        android:title="Gps"
-        app:showAsAction="always|collapseActionView" />
+        android:title="@string/gps"
+        app:showAsAction="ifRoom|collapseActionView" />
 
     <item
         android:id="@+id/search"
         android:icon="@android:drawable/ic_menu_search"
-        android:title="Search"
+        android:title="@string/search"
         app:actionViewClass="android.widget.SearchView"
-        app:showAsAction="always|collapseActionView" />
+        app:showAsAction="ifRoom|collapseActionView" />
 </menu>

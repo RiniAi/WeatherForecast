@@ -1,6 +1,8 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical">
 
     <androidx.cardview.widget.CardView
@@ -25,7 +27,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:text="00:00" />
+                    tools:text="00:00" />
 
                 <TextView
                     android:id="@+id/tv_date"
@@ -33,7 +35,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:padding="@dimen/margin_padding_8dp"
-                    android:text="juli 1" />
+                    tools:text="juli 1" />
             </LinearLayout>
 
             <ImageView
@@ -41,7 +43,8 @@
                 android:layout_width="@dimen/list_hourly_size_main_image"
                 android:layout_height="@dimen/list_hourly_size_main_image"
                 android:layout_gravity="center"
-                android:src="@drawable/d_clear_sky" />
+                android:src="@drawable/d_clear_sky"
+                tools:ignore="ContentDescription"/>
 
             <LinearLayout
                 android:layout_width="128dp"
@@ -54,7 +57,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:padding="@dimen/margin_padding_8dp"
-                    android:text="sunny" />
+                    tools:text="sunny" />
 
                 <TextView
                     android:id="@+id/tv_wind_speed"
@@ -62,7 +65,7 @@
                     android:layout_height="wrap_content"
                     android:gravity="center"
                     android:padding="@dimen/margin_padding_8dp"
-                    android:text="00 km/h" />
+                    tools:text="00 km/h" />
             </LinearLayout>
 
             <LinearLayout
@@ -76,30 +79,15 @@
                     android:layout_height="wrap_content"
                     android:gravity="center"
                     android:padding="@dimen/margin_padding_8dp"
-                    android:text="about 00°" />
+                    tools:text="about 00°" />
 
-                <LinearLayout
+                <TextView
+                    android:id="@+id/tv_clouds"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:gravity="center">
-
-                    <ImageView
-                        android:id="@+id/iv_clouds"
-                        android:layout_width="@dimen/list_hourly_size_crop_image"
-                        android:layout_height="@dimen/list_hourly_size_crop_image"
-                        android:gravity="center"
-                        android:layout_marginStart="@dimen/margin_padding_8dp"
-                        android:src="@drawable/not_drop" />
-
-                    <TextView
-                        android:id="@+id/tv_clouds"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:gravity="center"
-                        android:padding="@dimen/margin_padding_8dp"
-                        android:text="0%" />
-                </LinearLayout>
+                    android:padding="@dimen/margin_padding_8dp"
+                    tools:text="0%"
+                    app:drawableStartCompat="@drawable/not_drop" />
             </LinearLayout>
         </LinearLayout>
     </androidx.cardview.widget.CardView>

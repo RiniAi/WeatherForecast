@@ -17,6 +17,7 @@ import com.example.weatherforecast.models.Hourly;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 
 import javax.inject.Inject;
 
@@ -45,13 +46,13 @@ public class TodayHourlyAdapter extends BaseAdapter<Hourly, TodayHourlyAdapter.H
         if (hourly == null) {
             return;
         }
-        holder.date.setText(new SimpleDateFormat("HH:mm").format(new Date(hourly.getDate() * 1000L)));
+        holder.date.setText(new SimpleDateFormat("HH:mm", Locale.ENGLISH).format(new Date(hourly.getDate() * 1000L)));
         holder.temperature.setText(getContext().getString(R.string.temperature, (int) hourly.getTemp()));
         selectImage(hourly, holder);
     }
 
     private void selectImage(Hourly hourly, HourlyForecastViewHolder holder) {
-        int time = Integer.parseInt(new SimpleDateFormat("HH").format(new Date(hourly.getDate() * 1000L)));
+        int time = Integer.parseInt(new SimpleDateFormat("HH", Locale.ENGLISH).format(new Date(hourly.getDate() * 1000L)));
         switch (hourly.getWeather().get(0).getId()) {
             case 200:
             case 201:
