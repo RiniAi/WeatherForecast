@@ -24,6 +24,7 @@ import com.google.android.gms.location.LocationServices;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 
@@ -37,7 +38,7 @@ import io.reactivex.rxjava3.schedulers.Schedulers;
 public class MainPresenter implements MainContract.Presenter {
     public static final String STORAGE_LOCATION = "location";
     private int locationRequestCode = 1000;
-    private String locationName;
+    private String[] locationMemory;
     private int counter = 0;
 
     private FusedLocationProviderClient fusedLocationClient;
@@ -69,16 +70,16 @@ public class MainPresenter implements MainContract.Presenter {
 
     @Override
     public void start() {
-        locationName = sharedPreferences.getString(STORAGE_LOCATION, "");
-        Log.i("FusedLocationClient", locationName);
+        locationMemory = sharedPreferences.getString(STORAGE_LOCATION, "").split("/");
+        Log.i("WeatherForecast", "Location in memory: " + Arrays.toString(locationMemory));
         if (isInternetAvailable() & isGpsAvailable()) {
             getForecastViaGps();
         } else if (!isInternetAvailable()) {
             view.checkInternetConnection();
             view.hideProgressBar();
-        } else if (!isGpsAvailable() & !locationName.isEmpty()) {
-            getForecastViaQuery(locationName);
-        } else if (!isGpsAvailable() & locationName.isEmpty()) {
+        } else if (!isGpsAvailable() & !Arrays.toString(locationMemory).isEmpty()) {
+            loadForecast(Double.parseDouble(locationMemory[0]), Double.parseDouble(locationMemory[1]));
+        } else if (!isGpsAvailable() & Arrays.toString(locationMemory).isEmpty()) {
             view.checkGpsEnabledRoQuery();
             view.showEmptyView();
         }
@@ -86,9 +87,11 @@ public class MainPresenter implements MainContract.Presenter {
 
     @Override
     public void swipeRefresh() {
-        locationName = sharedPreferences.getString(STORAGE_LOCATION, "");
-        if (isInternetAvailable() && !locationName.isEmpty()) {
-            getForecastViaQuery(locationName);
+        locationMemory = sharedPreferences.getString(STORAGE_LOCATION, "").split("/");
+        if (isInternetAvailable() && !Arrays.toString(locationMemory).isEmpty()) {
+            loadForecast(Double.parseDouble(locationMemory[0]), Double.parseDouble(locationMemory[1]));
+        } else if (!isInternetAvailable()) {
+            view.checkInternetConnection();
         } else {
             view.refreshError();
         }
@@ -114,13 +117,12 @@ public class MainPresenter implements MainContract.Presenter {
 
     @Override
     public void getForecastViaGps() {
-        locationName = sharedPreferences.getString(STORAGE_LOCATION, "");
         if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
                 ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions((Activity) view, new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, locationRequestCode);
         } else {
             fusedLocationClient.getLastLocation().addOnSuccessListener(this::getLtdLng);
-            Log.i("FusedLocationClient", "Permission is obtained");
+            Log.i("WeatherForecast", "GetForecastViaGps: Permission to determine the location of the received");
         }
     }
 
@@ -132,7 +134,6 @@ public class MainPresenter implements MainContract.Presenter {
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     checkPermission();
                     fusedLocationClient.getLastLocation().addOnSuccessListener(this::getLtdLng);
-                    Log.i("FusedLocationClient", "Permission is obtained");
                 } else {
                     checkLastQuery();
                 }
@@ -143,14 +144,14 @@ public class MainPresenter implements MainContract.Presenter {
 
     @Override
     public void checkLastQuery() {
-        if (locationName.isEmpty()) {
+        if (Arrays.toString(locationMemory).isEmpty()) {
             view.showEmptyView();
             view.permissionDenied();
-            Log.e("FusedLocationClient", "Permission denied");
+            Log.e("WeatherForecast", "GetForecastViaGps: Permission to determine the location was not received");
         } else {
-            getForecastViaQuery(locationName);
+            loadForecast(Double.parseDouble(locationMemory[0]), Double.parseDouble(locationMemory[1]));
             view.permissionDeniedLastQuery();
-            Log.e("FusedLocationClient", "Permission denied. Search was performed for the last query " + locationName);
+            Log.e("WeatherForecast", "GetForecastViaGps: Permission to determine the location was not received. Search is performed by location saved in memory " + Arrays.toString(locationMemory));
         }
     }
 
@@ -164,7 +165,7 @@ public class MainPresenter implements MainContract.Presenter {
     private void getLtdLng(Location location) {
         if (location != null) {
             loadForecast(location.getLatitude(), location.getLongitude());
-            Log.i("FusedLocationClient", "Location" + " " + location.getLatitude() + " " + location.getLongitude());
+            Log.i("WeatherForecast", "GetForecastViaGps: Location determined by GPS: " + location.getLatitude() + " " + location.getLongitude());
         }
         //  The location object may be null in the following situations:
         //  - location is turned off in the device settings;
@@ -178,7 +179,7 @@ public class MainPresenter implements MainContract.Presenter {
             // Case when there was no last location and it also failed to update
             else {
                 view.checkGpsEnabled();
-                Log.e("FusedLocationClient", "Location is null");
+                Log.e("WeatherForecast", "GetForecastViaGps: FusedLocationProvider return null");
             }
         }
     }
@@ -197,7 +198,7 @@ public class MainPresenter implements MainContract.Presenter {
                 for (Location location : locationResult.getLocations()) {
                     if (location != null) {
                         loadForecast(location.getLatitude(), location.getLongitude());
-                        Log.i("FusedLocationClient", "Location" + " " + location.getLatitude() + " " + location.getLongitude());
+                        Log.i("WeatherForecast", "GetForecastViaGps: FusedLocationProvider has been updated, location: " + location.getLatitude() + " " + location.getLongitude());
                     }
                 }
             }
@@ -216,13 +217,15 @@ public class MainPresenter implements MainContract.Presenter {
                         // onNext
                         forecast -> {
                             updateMessage();
+                            saveLocation(latitude, longitude);
                             determineCityByCoordinates(latitude, longitude);
                             view.showForecast(forecast);
+                            Log.i("WeatherForecast", "Request was completed successfully");
                         },
                         // onError
                         throwable -> {
                             view.showError();
-                            Log.e("Response", throwable.getMessage());
+                            Log.e("WeatherForecast", "An error occurred during the request: " + throwable.getMessage());
                         }
                 );
         disposables.add(subscription);
@@ -230,9 +233,37 @@ public class MainPresenter implements MainContract.Presenter {
 
     private void updateMessage() {
         counter++;
-        Log.i("FusedLocationClient", "UPDATE" + counter);
         if (counter > 1) {
             view.updateMessage();
+        }
+    }
+
+    private void saveLocation(double latitude, double longitude) {
+        String location = latitude + "/" + longitude;
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString(STORAGE_LOCATION, location);
+        editor.apply();
+    }
+
+    @Override
+    public void getForecastViaQuery(String location) {
+        List<Address> locations = new ArrayList<>();
+        try {
+            locations = geocoder.getFromLocationName(location, 1);
+            Log.i("WeatherForecast", "GetForecastViaQuery: Location: " + locations + " " + locations.size());
+        } catch (IOException e) {
+            view.showError();
+            Log.e("WeatherForecast", "GetForecastViaQuery: Impossible to connect to GeoCoder:", e);
+        } finally {
+            if (locations.size() == 0) {
+                view.nothingNotFound();
+                view.hideProgressBar();
+            } else {
+                double lat = locations.get(0).getLatitude();
+                double lon = locations.get(0).getLongitude();
+                loadForecast(lat, lon);
+                Log.i("WeatherForecast", "GetForecastViaQuery: Location: " + lat + " " + lon);
+            }
         }
     }
 
@@ -240,10 +271,10 @@ public class MainPresenter implements MainContract.Presenter {
         List<Address> location = new ArrayList<>();
         try {
             location = geocoder.getFromLocation(latitude, longitude, 1);
-            Log.i("Geolocation", "Location" + " " + location + " " + location.size());
+            Log.i("WeatherForecast", "DetermineCityByCoordinates: Location size: " + location.size());
         } catch (IOException e) {
             view.showError();
-            Log.e("Geolocation", "Impossible to connect to GeoCoder", e);
+            Log.e("WeatherForecast", "DetermineCityByCoordinates: Impossible to connect to GeoCoder");
         } finally {
             if (location.size() != 0) {
                 String area = location.get(0).getAdminArea();
@@ -256,36 +287,7 @@ public class MainPresenter implements MainContract.Presenter {
                     area = "";
                 }
                 view.setCityNameForToolbarTitle(city, area);
-                saveLocation(location);
-                Log.i("Geolocation", "Location" + location.toString());
-            }
-        }
-    }
-
-    private void saveLocation(List<Address> location) {
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putString(STORAGE_LOCATION, location.get(0).getLocality());
-        editor.apply();
-    }
-
-    @Override
-    public void getForecastViaQuery(String locationName) {
-        List<Address> location = new ArrayList<>();
-        try {
-            location = geocoder.getFromLocationName(locationName, 1);
-            Log.i("Geolocation", "Location" + " " + location + " " + location.size());
-        } catch (IOException e) {
-            view.showError();
-            Log.e("Geolocation", "Impossible to connect to GeoCoder", e);
-        } finally {
-            if (location.size() == 0) {
-                view.nothingNotFound();
-                view.hideProgressBar();
-            } else {
-                double lat = location.get(0).getLatitude();
-                double lon = location.get(0).getLongitude();
-                loadForecast(lat, lon);
-                Log.i("Geolocation", "Location" + " " + lat + " " + lon);
+                Log.i("WeatherForecast", "DetermineCityByCoordinates: Location: " + location.get(0).getLocality());
             }
         }
     }
