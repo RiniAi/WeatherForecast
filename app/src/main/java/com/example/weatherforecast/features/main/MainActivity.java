@@ -1,15 +1,17 @@
 package com.example.weatherforecast.features.main;
 
+import android.Manifest;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.Gravity;
 import android.view.Menu;
-import android.view.View;
 import android.widget.SearchView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 import androidx.viewpager.widget.ViewPager;
 
 import com.example.weatherforecast.App;
@@ -19,36 +21,39 @@ import com.example.weatherforecast.features.FragmentPageAdapter;
 import com.example.weatherforecast.features.daily.DailyFragment;
 import com.example.weatherforecast.features.hourly.HourlyFragment;
 import com.example.weatherforecast.features.today.TodayFragment;
-import com.example.weatherforecast.models.Forecast;
 import com.google.android.material.tabs.TabLayout;
 
 import javax.inject.Inject;
 
-public class MainActivity extends AppCompatActivity implements MainContract.View {
+public class MainActivity extends AppCompatActivity {
     private boolean doubleBackToExitPressedOnce = false;
+    private int locationRequestCode = 1000;
     private ActivityMainBinding binding;
     private ViewPager pager;
     private int pageItem = 0;
 
     @Inject
-    MainContract.Presenter presenter;
+    ViewModel viewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         App.getAppComponent().activityComponent().inject(this);
-        presenter.setView(this);
 
         initViewBinding();
         initNavigation();
         initSwipeRefresh();
-        presenter.start();
+        initToast();
+        showForecast();
+        checkGpsEnabled();
+        viewModel.start();
     }
 
     private void initViewBinding() {
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-        setSupportActionBar(binding.toolbarMainActivity.toolbar);
+        binding.setViewModel((MainViewModel) viewModel);
+        setSupportActionBar(binding.toolbar);
     }
 
     private void initNavigation() {
@@ -57,18 +62,47 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
         navigation.setupWithViewPager(pager);
     }
 
+    private void initToast() {
+        viewModel.getToastObserver().observe(this, message -> {
+            Toast toast = Toast.makeText(this, message, Toast.LENGTH_LONG);
+            toastSetGravity(toast);
+            toast.show();
+        });
+    }
+
+    private void showForecast() {
+        viewModel.getForecast().observe(this, forecast -> {
+            FragmentPageAdapter adapter = new FragmentPageAdapter(getSupportFragmentManager());
+            adapter.addFragment(TodayFragment.newInstance(forecast), getString(R.string.main_activity_today_fragment));
+            adapter.addFragment(HourlyFragment.newInstance(forecast.getHourly()), getString(R.string.main_activity_hourly_fragment));
+            adapter.addFragment(DailyFragment.newInstance(forecast.getDaily()), getString(R.string.main_activity_daily_fragment));
+            pager.setAdapter(adapter);
+            pager.setCurrentItem(pageItem);
+        });
+    }
+
+    private void checkGpsEnabled() {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
+                ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, locationRequestCode);
+            viewModel.permissionDenied(true);
+        } else {
+            viewModel.permissionDenied(false);
+        }
+    }
+
     private void initSwipeRefresh() {
         binding.swipeRefresh.setOnRefreshListener(() -> new Handler().postDelayed(() -> {
             pageItem = pager.getCurrentItem();
-            presenter.swipeRefresh();
             binding.swipeRefresh.setRefreshing(false);
-        }, 1500));
+            viewModel.swipeRefresh();
+        }, 2000));
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        presenter.unsubscribe();
+        viewModel.unsubscribe();
     }
 
     @Override
@@ -90,17 +124,9 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
         SearchView searchView = (SearchView) menu.findItem(R.id.search).getActionView();
 
         menu.findItem(R.id.gps).setOnMenuItemClickListener(menuItem -> {
+            checkGpsEnabled();
             pageItem = pager.getCurrentItem();
-            if (presenter.isInternetAvailable() & presenter.isGpsAvailable()) {
-                showProgressBar();
-                presenter.getForecastViaGps();
-            } else if (!presenter.isInternetAvailable()) {
-                checkInternetConnection();
-            } else if (!presenter.isGpsAvailable()) {
-                checkGpsEnabled();
-            } else {
-                showError();
-            }
+            viewModel.startSearchByGps();
             menu.findItem(R.id.search).collapseActionView(); // Collapse the action view associated with this menu item
             return true;
         });
@@ -114,12 +140,7 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
             @Override
             public boolean onQueryTextSubmit(String s) {
                 pageItem = pager.getCurrentItem();
-                if (presenter.isInternetAvailable()) {
-                    showProgressBar();
-                    presenter.getForecastViaQuery(searchView.getQuery().toString());
-                } else {
-                    checkInternetConnection();
-                }
+                viewModel.startSearchByQuery(s);
                 searchView.setQuery("", false);
                 menu.findItem(R.id.search).collapseActionView(); // Collapse the action view associated with this menu item
                 return true;
@@ -141,118 +162,15 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        presenter.requestPermissionsResult(requestCode, grantResults);
-    }
-
-    @Override
-    public void showForecast(Forecast forecast) {
-        showFragmentContainer();
-        FragmentPageAdapter adapter = new FragmentPageAdapter(getSupportFragmentManager());
-        adapter.addFragment(TodayFragment.newInstance(forecast), getString(R.string.main_activity_today_fragment));
-        adapter.addFragment(HourlyFragment.newInstance(forecast.getHourly()), getString(R.string.main_activity_hourly_fragment));
-        adapter.addFragment(DailyFragment.newInstance(forecast.getDaily()), getString(R.string.main_activity_daily_fragment));
-        pager.setAdapter(adapter);
-        pager.setCurrentItem(pageItem);
-    }
-
-    @Override
-    public void showProgressBar() {
-        binding.progressBar.setVisibility(View.VISIBLE);
-    }
-
-    @Override
-    public void showFragmentContainer() {
-        binding.fragmentContainer.setVisibility(View.VISIBLE);
-        binding.emptyView.setVisibility(View.GONE);
-        binding.progressBar.setVisibility(View.GONE);
-    }
-
-    @Override
-    public void showEmptyView() {
-        binding.fragmentContainer.setVisibility(View.GONE);
-        binding.emptyView.setVisibility(View.VISIBLE);
-        binding.progressBar.setVisibility(View.GONE);
-    }
-
-    @Override
-    public void hideProgressBar() {
-        binding.progressBar.setVisibility(View.GONE);
-    }
-
-    @Override
-    public void setCityNameForToolbarTitle(String city, String area) {
-        binding.toolbarMainActivity.toolbar.setTitle(city + " " + area);
+        viewModel.requestPermissionsResult(requestCode, grantResults);
     }
 
     private void toastSetGravity(Toast toast) {
-        toast.setGravity(Gravity.CENTER|Gravity.BOTTOM, 0, 40);
+        toast.setGravity(Gravity.CENTER | Gravity.BOTTOM, 0, 40);
     }
 
     private void clickAgain() {
         Toast toast = Toast.makeText(this, R.string.main_activity_click_again, Toast.LENGTH_LONG);
-        toastSetGravity(toast);
-        toast.show();
-    }
-
-    @Override
-    public void checkGpsEnabled() {
-        Toast toast = Toast.makeText(this, R.string.main_activity_check_gps_enabled, Toast.LENGTH_LONG);
-        toastSetGravity(toast);
-        toast.show();
-    }
-
-    @Override
-    public void checkGpsEnabledRoQuery() {
-        Toast toast = Toast.makeText(this, R.string.main_activity_check_gps_enabled_or_query, Toast.LENGTH_LONG);
-        toastSetGravity(toast);
-        toast.show();
-    }
-
-    @Override
-    public void checkInternetConnection() {
-        Toast toast = Toast.makeText(this, R.string.main_activity_check_internet_connection, Toast.LENGTH_LONG);
-        toastSetGravity(toast);
-        toast.show();
-    }
-
-    @Override
-    public void nothingNotFound() {
-        Toast toast = Toast.makeText(this, R.string.main_activity_nothing_not_found, Toast.LENGTH_LONG);
-        toastSetGravity(toast);
-        toast.show();
-    }
-
-    @Override
-    public void updateMessage() {
-        Toast toast = Toast.makeText(this, R.string.main_activity_date_update, Toast.LENGTH_LONG);
-        toastSetGravity(toast);
-        toast.show();
-    }
-
-    @Override
-    public void refreshError() {
-        Toast toast = Toast.makeText(this, R.string.main_activity_refresh_start, Toast.LENGTH_LONG);
-        toastSetGravity(toast);
-        toast.show();
-    }
-
-    @Override
-    public void permissionDenied() {
-        Toast toast = Toast.makeText(this, R.string.main_activity_permission_denied, Toast.LENGTH_LONG);
-        toastSetGravity(toast);
-        toast.show();
-    }
-
-    @Override
-    public void permissionDeniedLastQuery() {
-        Toast toast = Toast.makeText(this, R.string.main_activity_permission_denied_last_query, Toast.LENGTH_LONG);
-        toastSetGravity(toast);
-        toast.show();
-    }
-
-    @Override
-    public void showError() {
-        Toast toast = Toast.makeText(this, R.string.main_activity_try_later, Toast.LENGTH_LONG);
         toastSetGravity(toast);
         toast.show();
     }
