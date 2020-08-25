@@ -77,9 +77,9 @@ public class MainPresenter implements MainContract.Presenter {
         } else if (!isInternetAvailable()) {
             view.checkInternetConnection();
             view.hideProgressBar();
-        } else if (!isGpsAvailable() & !Arrays.toString(locationMemory).isEmpty()) {
+        } else if (!isGpsAvailable() & !Arrays.toString(locationMemory).equals("[]")) {
             loadForecast(Double.parseDouble(locationMemory[0]), Double.parseDouble(locationMemory[1]));
-        } else if (!isGpsAvailable() & Arrays.toString(locationMemory).isEmpty()) {
+        } else if (!isGpsAvailable() & Arrays.toString(locationMemory).equals("[]")) {
             view.checkGpsEnabledRoQuery();
             view.showEmptyView();
         }
@@ -88,7 +88,7 @@ public class MainPresenter implements MainContract.Presenter {
     @Override
     public void swipeRefresh() {
         locationMemory = sharedPreferences.getString(STORAGE_LOCATION, "").split("/");
-        if (isInternetAvailable() && !Arrays.toString(locationMemory).isEmpty()) {
+        if (isInternetAvailable() && !Arrays.toString(locationMemory).equals("[]")) {
             loadForecast(Double.parseDouble(locationMemory[0]), Double.parseDouble(locationMemory[1]));
         } else if (!isInternetAvailable()) {
             view.checkInternetConnection();
@@ -144,7 +144,7 @@ public class MainPresenter implements MainContract.Presenter {
 
     @Override
     public void checkLastQuery() {
-        if (Arrays.toString(locationMemory).isEmpty()) {
+        if (Arrays.toString(locationMemory).equals("[]")) {
             view.showEmptyView();
             view.permissionDenied();
             Log.e("WeatherForecast", "GetForecastViaGps: Permission to determine the location was not received");
