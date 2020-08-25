@@ -1,52 +1,73 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.swiperefreshlayout.widget.SwipeRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/swipe_refresh"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical">
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <data>
+        <import type="android.view.View"/>
 
-    <LinearLayout
+        <variable
+            name="viewModel"
+            type="com.example.weatherforecast.features.main.MainViewModel" />
+    </data>
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/swipe_refresh"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <include
-            android:id="@+id/toolbar_main_activity"
-            layout="@layout/toolbar_main_activity" />
-
-        <com.google.android.material.tabs.TabLayout
-            android:id="@+id/navigation"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/margin_padding_4dp"
-            app:tabSelectedTextColor="@color/color_primary_dark"
-            app:tabMode="fixed">
-        </com.google.android.material.tabs.TabLayout>
-
         <LinearLayout
-            android:id="@+id/progress_bar"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
-            <ProgressBar
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <androidx.appcompat.widget.Toolbar
+                android:id="@+id/toolbar"
+                style="@style/Widget.AppCompat.Toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textSize="@dimen/text_size_normal"
+                    android:gravity="start"
+                    android:text="@={viewModel.locality}"/>
+            </androidx.appcompat.widget.Toolbar>
+
+            <com.google.android.material.tabs.TabLayout
+                android:id="@+id/navigation"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center" />
+                android:layout_marginBottom="@dimen/margin_padding_4dp"
+                app:tabSelectedTextColor="@color/color_primary_dark"
+                app:tabMode="fixed">
+            </com.google.android.material.tabs.TabLayout>
+
+            <LinearLayout
+                android:id="@+id/progress_bar"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:visibility="@{viewModel.isDataLoading ? View.VISIBLE : View.GONE}">
+                <ProgressBar
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/empty_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="@dimen/main_activity_tv_layout_margin_top"
+                android:drawablePadding="@dimen/margin_padding_16dp"
+                android:text="@string/search_was_not_performed"
+                android:visibility="@{viewModel.isEmpty ? View.VISIBLE : View.GONE}"
+                app:drawableTopCompat="@drawable/umbrella" />
+
+            <androidx.viewpager.widget.ViewPager
+                android:id="@+id/fragment_container"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
         </LinearLayout>
-
-        <TextView
-            android:id="@+id/empty_view"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_marginTop="@dimen/main_activity_tv_layout_margin_top"
-            android:drawablePadding="@dimen/margin_padding_16dp"
-            android:text="@string/search_was_not_performed"
-            app:drawableTopCompat="@drawable/umbrella" />
-
-        <androidx.viewpager.widget.ViewPager
-            android:id="@+id/fragment_container"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" />
-    </LinearLayout>
-</androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+</layout>
