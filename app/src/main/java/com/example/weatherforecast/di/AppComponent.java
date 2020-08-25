@@ -5,7 +5,7 @@ import dagger.Component;
 @Component(modules = {
         AppModule.class,
         ServiceModule.class,
-        PresenterModule.class,
+        ViewModelModule.class,
         ForecastRepositoryModule.class
 })
 

@@ -1,7 +1,6 @@
 package com.example.weatherforecast.features.main;
 
 import android.Manifest;
-import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -14,7 +13,13 @@ import android.net.NetworkInfo;
 import android.util.Log;
 
 import androidx.core.app.ActivityCompat;
+import androidx.databinding.ObservableBoolean;
+import androidx.databinding.ObservableField;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
 
+import com.example.weatherforecast.R;
+import com.example.weatherforecast.models.Forecast;
 import com.example.weatherforecast.usecases.RequestForecastUseCase;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
@@ -35,15 +40,20 @@ import io.reactivex.rxjava3.disposables.CompositeDisposable;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 
-public class MainPresenter implements MainContract.Presenter {
-    public static final String STORAGE_LOCATION = "location";
-    private int locationRequestCode = 1000;
+public class MainViewModel implements ViewModel {
+    public final MutableLiveData<Forecast> forecastLive = new MutableLiveData<>();
+    public final MutableLiveData<String> toastMessageObserver = new MutableLiveData<>();
+    public final ObservableField<String> locality = new ObservableField<>();
+    public final ObservableBoolean isDataLoading = new ObservableBoolean();
+    public final ObservableBoolean isEmpty = new ObservableBoolean();
+
+    public static final String STORAGE_LOCATION = "00/00";
+    private boolean isPermissionGps = false;
     private String[] locationMemory;
     private int counter = 0;
 
     private FusedLocationProviderClient fusedLocationClient;
     private CompositeDisposable disposables;
-    private MainContract.View view;
     private Geocoder geocoder;
 
     @Inject
@@ -54,46 +64,92 @@ public class MainPresenter implements MainContract.Presenter {
     RequestForecastUseCase requestForecastUseCase;
 
     @Inject
-    public MainPresenter(Context context, SharedPreferences sharedPreferences, RequestForecastUseCase requestForecastUseCase) {
+    public MainViewModel(Context context, SharedPreferences sharedPreferences, RequestForecastUseCase requestForecastUseCase) {
         this.context = context;
         this.sharedPreferences = sharedPreferences;
         this.disposables = new CompositeDisposable();
-        this.geocoder = new Geocoder(context, Locale.getDefault());
         this.requestForecastUseCase = requestForecastUseCase;
+        this.geocoder = new Geocoder(context, Locale.getDefault());
         this.fusedLocationClient = LocationServices.getFusedLocationProviderClient(context);
     }
 
     @Override
-    public void setView(MainContract.View view) {
-        this.view = view;
+    public LiveData<String> getToastObserver() {
+        return toastMessageObserver;
+    }
+
+    @Override
+    public LiveData<Forecast> getForecast() {
+        return forecastLive;
+    }
+
+    @Override
+    public void permissionDenied(boolean b) {
+        isPermissionGps = b;
     }
 
     @Override
     public void start() {
+        isDataLoading.set(true);
+        isEmpty.set(true);
+        Log.i("WeatherForecast", "Data Loading: " + isDataLoading.get());
+        locality.set(context.getString(R.string.app_name));
         locationMemory = sharedPreferences.getString(STORAGE_LOCATION, "").split("/");
         Log.i("WeatherForecast", "Location in memory: " + Arrays.toString(locationMemory));
         if (isInternetAvailable() & isGpsAvailable()) {
             getForecastViaGps();
         } else if (!isInternetAvailable()) {
-            view.checkInternetConnection();
-            view.hideProgressBar();
-        } else if (!isGpsAvailable() & !Arrays.toString(locationMemory).isEmpty()) {
+            toastMessageObserver.setValue(context.getString(R.string.main_activity_check_internet_connection));
+            isDataLoading.set(false);
+        } else if (!isGpsAvailable() & !Arrays.toString(locationMemory).equals("[]")) {
             loadForecast(Double.parseDouble(locationMemory[0]), Double.parseDouble(locationMemory[1]));
-        } else if (!isGpsAvailable() & Arrays.toString(locationMemory).isEmpty()) {
-            view.checkGpsEnabledRoQuery();
-            view.showEmptyView();
+        } else if (!isGpsAvailable() & Arrays.toString(locationMemory).equals("[]")) {
+            toastMessageObserver.setValue(context.getString(R.string.main_activity_check_gps_enabled_or_query));
+            isDataLoading.set(false);
+        }
+    }
+
+    @Override
+    public void startSearchByGps() {
+        isDataLoading.set(true);
+        locationMemory = sharedPreferences.getString(STORAGE_LOCATION, "").split("/");
+        Log.i("WeatherForecast", "Location in memory: " + Arrays.toString(locationMemory));
+        if (isInternetAvailable() & isGpsAvailable()) {
+            getForecastViaGps();
+        } else if (!isInternetAvailable()) {
+            toastMessageObserver.setValue(context.getString(R.string.main_activity_check_internet_connection));
+            isDataLoading.set(false);
+        } else if (!isGpsAvailable()) {
+            toastMessageObserver.setValue(context.getString(R.string.main_activity_check_gps_enabled));
+            isDataLoading.set(false);
+        } else {
+            toastMessageObserver.setValue(context.getString(R.string.main_activity_try_later));
+            isDataLoading.set(false);
+        }
+    }
+
+    @Override
+    public void startSearchByQuery(String s) {
+        isDataLoading.set(true);
+        if (isInternetAvailable()) {
+            getForecastViaQuery(s);
+        } else {
+            toastMessageObserver.setValue(context.getString(R.string.main_activity_check_internet_connection));
+            isDataLoading.set(false);
         }
     }
 
     @Override
     public void swipeRefresh() {
         locationMemory = sharedPreferences.getString(STORAGE_LOCATION, "").split("/");
-        if (isInternetAvailable() && !Arrays.toString(locationMemory).isEmpty()) {
+        if (isInternetAvailable() && !Arrays.toString(locationMemory).equals("[]")) {
             loadForecast(Double.parseDouble(locationMemory[0]), Double.parseDouble(locationMemory[1]));
         } else if (!isInternetAvailable()) {
-            view.checkInternetConnection();
+            toastMessageObserver.setValue(context.getString(R.string.main_activity_check_internet_connection));
+            isDataLoading.set(false);
         } else {
-            view.refreshError();
+            toastMessageObserver.setValue(context.getString(R.string.main_activity_refresh_start));
+            isDataLoading.set(false);
         }
     }
 
@@ -102,31 +158,27 @@ public class MainPresenter implements MainContract.Presenter {
         disposables.clear();
     }
 
-    @Override
-    public boolean isGpsAvailable() {
+    private boolean isGpsAvailable() {
         LocationManager locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
         return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
     }
 
-    @Override
-    public boolean isInternetAvailable() {
+    private boolean isInternetAvailable() {
         ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetwork = connectivityManager.getActiveNetworkInfo();
         return activeNetwork != null && activeNetwork.isConnectedOrConnecting();
     }
 
-    @Override
-    public void getForecastViaGps() {
-        if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
-                ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions((Activity) view, new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, locationRequestCode);
-        } else {
+    private void getForecastViaGps() {
+        isDataLoading.set(true);
+        if (!isPermissionGps) {
+            checkPermission();
             fusedLocationClient.getLastLocation().addOnSuccessListener(this::getLtdLng);
             Log.i("WeatherForecast", "GetForecastViaGps: Permission to determine the location of the received");
         }
     }
 
-    // Requesting permission if it was not received before (requestCode == 1000)
+    // Requesting permission if it was not received before
     @Override
     public void requestPermissionsResult(int requestCode, int[] grantResults) {
         switch (requestCode) {
@@ -142,23 +194,22 @@ public class MainPresenter implements MainContract.Presenter {
         }
     }
 
-    @Override
-    public void checkLastQuery() {
-        if (Arrays.toString(locationMemory).isEmpty()) {
-            view.showEmptyView();
-            view.permissionDenied();
-            Log.e("WeatherForecast", "GetForecastViaGps: Permission to determine the location was not received");
-        } else {
-            loadForecast(Double.parseDouble(locationMemory[0]), Double.parseDouble(locationMemory[1]));
-            view.permissionDeniedLastQuery();
-            Log.e("WeatherForecast", "GetForecastViaGps: Permission to determine the location was not received. Search is performed by location saved in memory " + Arrays.toString(locationMemory));
-        }
-    }
-
     private void checkPermission() {
         if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
                 ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             return;
+        }
+    }
+
+    private void checkLastQuery() {
+        if (Arrays.toString(locationMemory).equals("[]")) {
+            toastMessageObserver.setValue(context.getString(R.string.main_activity_permission_denied));
+            isDataLoading.set(false);
+            Log.e("WeatherForecast", "GetForecastViaGps: Permission to determine the location was not received");
+        } else {
+            loadForecast(Double.parseDouble(locationMemory[0]), Double.parseDouble(locationMemory[1]));
+            toastMessageObserver.setValue(context.getString(R.string.main_activity_permission_denied_last_query));
+            Log.e("WeatherForecast", "GetForecastViaGps: Permission to determine the location was not received. Search is performed by location saved in memory " + Arrays.toString(locationMemory));
         }
     }
 
@@ -178,7 +229,8 @@ public class MainPresenter implements MainContract.Presenter {
             }
             // Case when there was no last location and it also failed to update
             else {
-                view.checkGpsEnabled();
+                toastMessageObserver.setValue(context.getString(R.string.main_activity_check_gps_enabled));
+                isDataLoading.set(false);
                 Log.e("WeatherForecast", "GetForecastViaGps: FusedLocationProvider return null");
             }
         }
@@ -219,12 +271,15 @@ public class MainPresenter implements MainContract.Presenter {
                             updateMessage();
                             saveLocation(latitude, longitude);
                             determineCityByCoordinates(latitude, longitude);
-                            view.showForecast(forecast);
+                            forecastLive.setValue(forecast);
+                            isEmpty.set(false);
+                            isDataLoading.set(false);
                             Log.i("WeatherForecast", "Request was completed successfully");
                         },
                         // onError
                         throwable -> {
-                            view.showError();
+                            toastMessageObserver.setValue(context.getString(R.string.main_activity_try_later));
+                            isDataLoading.set(false);
                             Log.e("WeatherForecast", "An error occurred during the request: " + throwable.getMessage());
                         }
                 );
@@ -234,7 +289,7 @@ public class MainPresenter implements MainContract.Presenter {
     private void updateMessage() {
         counter++;
         if (counter > 1) {
-            view.updateMessage();
+            toastMessageObserver.setValue(context.getString(R.string.main_activity_date_update));
         }
     }
 
@@ -245,19 +300,19 @@ public class MainPresenter implements MainContract.Presenter {
         editor.apply();
     }
 
-    @Override
-    public void getForecastViaQuery(String location) {
+    private void getForecastViaQuery(String location) {
         List<Address> locations = new ArrayList<>();
         try {
             locations = geocoder.getFromLocationName(location, 1);
             Log.i("WeatherForecast", "GetForecastViaQuery: Location: " + locations + " " + locations.size());
         } catch (IOException e) {
-            view.showError();
+            toastMessageObserver.setValue(context.getString(R.string.main_activity_try_later));
+            isDataLoading.set(false);
             Log.e("WeatherForecast", "GetForecastViaQuery: Impossible to connect to GeoCoder:", e);
         } finally {
             if (locations.size() == 0) {
-                view.nothingNotFound();
-                view.hideProgressBar();
+                toastMessageObserver.setValue(context.getString(R.string.main_activity_nothing_not_found));
+                isDataLoading.set(false);
             } else {
                 double lat = locations.get(0).getLatitude();
                 double lon = locations.get(0).getLongitude();
@@ -273,7 +328,7 @@ public class MainPresenter implements MainContract.Presenter {
             location = geocoder.getFromLocation(latitude, longitude, 1);
             Log.i("WeatherForecast", "DetermineCityByCoordinates: Location size: " + location.size());
         } catch (IOException e) {
-            view.showError();
+            toastMessageObserver.setValue(context.getString(R.string.main_activity_try_later));
             Log.e("WeatherForecast", "DetermineCityByCoordinates: Impossible to connect to GeoCoder");
         } finally {
             if (location.size() != 0) {
@@ -286,7 +341,7 @@ public class MainPresenter implements MainContract.Presenter {
                     city = area;
                     area = "";
                 }
-                view.setCityNameForToolbarTitle(city, area);
+                locality.set(city + " " + area);
                 Log.i("WeatherForecast", "DetermineCityByCoordinates: Location: " + location.get(0).getLocality());
             }
         }
