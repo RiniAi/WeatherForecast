@@ -27,6 +27,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
+                    android:padding="@dimen/margin_padding_8dp"
                     tools:text="00:00" />
 
                 <TextView
@@ -43,11 +44,12 @@
                 android:layout_width="@dimen/list_hourly_size_main_image"
                 android:layout_height="@dimen/list_hourly_size_main_image"
                 android:layout_gravity="center"
+                android:layout_marginEnd="@dimen/margin_padding_8dp"
                 android:src="@drawable/d_clear_sky"
                 tools:ignore="ContentDescription"/>
 
             <LinearLayout
-                android:layout_width="128dp"
+                android:layout_width="120dp"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="@dimen/margin_padding_16dp"
                 android:orientation="vertical">
